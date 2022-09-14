@@ -65,7 +65,7 @@ public class GTextUtils {
     public static boolean contains(String value, String... comps) {
         if (value == null || comps == null || comps.length == 0) return false;
 
-        ArrayList<Boolean> booleans = new ArrayList<>(); //Boolean列表, 当出现 false 后, 则表示这并不是并不是完全匹配
+        ArrayList<Boolean> booleans = new ArrayList<>(); //Boolean列表, 当出现 false 后, 则表示这并不是完全匹配
         for (String comp : comps) {
             booleans.add(value.contains(comp));
         }
@@ -73,7 +73,7 @@ public class GTextUtils {
         return !(booleans.contains(false)); //不包含false, 表示全部匹配
     }
 
-    /// 去掉所有空白字符
+    /// 去掉字符串前后的空白字符
     public static <S extends CharSequence> String to(S text) {
         if (text == null) return "";
         return to(text.toString());
@@ -82,6 +82,17 @@ public class GTextUtils {
     public static String to(String value) {
         if (value == null) return "";
         return value.trim();
+    }
+
+    /// 去掉字符串中的所有空白字符
+    public static <S extends CharSequence> String toAll(S text) {
+        if (text == null) return "";
+        return toAll(text.toString());
+    }
+
+    public static String toAll(String value) {
+        if (value == null) return "";
+        return value.trim().replaceAll("\\s", "");
     }
 
     /// 字符转整型
