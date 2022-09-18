@@ -1,4 +1,4 @@
-package com.freegang.uitls.date;
+package com.freegang.androidutils.date;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -29,8 +29,12 @@ public class GDateUtil {
     public static final long MILLISECONDS_FOR_ONE_HOUR = 60 * MILLISECONDS_FOR_ONE_MINUTE;
     public static final long MILLISECONDS_FOR_ONE_DAY = 24 * MILLISECONDS_FOR_ONE_HOUR;
 
+    private GDateUtil() {
+        ///
+    }
+
     /**
-     * 获取当前日期，只包年月日
+     * 获取当前日期，只包含年月日
      */
     public static Date getCurrentDate() {
         Calendar c = Calendar.getInstance();
@@ -276,7 +280,7 @@ public class GDateUtil {
     }
 
     /**
-     * 获取指定日期百分百
+     * 获取指定日期百分比
      *
      * @param date
      * @return

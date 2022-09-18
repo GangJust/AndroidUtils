@@ -1,4 +1,4 @@
-package com.freegang.utils.zxing;
+package com.freegang.androidutils.zxing;
 
 
 import android.graphics.Bitmap;
@@ -16,9 +16,10 @@ import com.google.zxing.qrcode.QRCodeWriter;
  */
 
 public class GZxingUtil {
-	
-	private GZxingUtil(){}
 
+    private GZxingUtil() {
+        ///
+    }
 
     /**
      * 创建二维码

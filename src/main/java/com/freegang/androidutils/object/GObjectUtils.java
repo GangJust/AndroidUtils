@@ -1,10 +1,11 @@
-package com.freegang.utils.object;
+package com.freegang.androidutils.object;
 
 import org.jetbrains.annotations.NotNull;
 
 public class GObjectUtils {
-    private GObjectUtils() {
 
+    private GObjectUtils() {
+        ///
     }
 
     /**
@@ -45,5 +46,4 @@ public class GObjectUtils {
     public interface ObjectCall<T> {
         void call(@NotNull T it);
     }
-
 }

@@ -1,4 +1,4 @@
-package com.freegang.utils.view;
+package com.freegang.androidutils.view;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,12 @@ public class GViewUtils {
 
     @IntDef({VISIBLE, INVISIBLE, GONE})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface GVisibility {
+    public @interface Visibility {
+        ///
+    }
+
+    private GViewUtils() {
+        ///
     }
 
     /**
@@ -28,7 +33,7 @@ public class GViewUtils {
      * @param viewGroup
      * @param visibility
      */
-    public static void setVisibilityAll(ViewGroup viewGroup, @GVisibility int visibility) {
+    public static void setVisibilityAll(ViewGroup viewGroup, @Visibility int visibility) {
         if (viewGroup.getChildCount() == 0) {
             viewGroup.setVisibility(visibility);
             return;

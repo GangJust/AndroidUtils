@@ -1,10 +1,14 @@
-package com.freegang.utils.text;
+package com.freegang.androidutils.text;
 
 
 import java.util.ArrayList;
 
 /// 字符串工具类
 public class GTextUtils {
+
+    private GTextUtils() {
+        ///
+    }
 
     /// 空判断
     public static <S extends CharSequence> boolean isEmpty(S text) {
