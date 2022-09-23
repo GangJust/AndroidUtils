@@ -18,6 +18,7 @@ public class GLog {
     @IntDef({V, D, I, W, E, A})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TYPE {
+        ///
     }
 
     private static final char[] T = new char[]{'V', 'D', 'I', 'W', 'E', 'A'};

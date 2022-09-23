@@ -16,7 +16,7 @@ public class GTextUtils {
     }
 
     public static boolean isEmpty(String value) {
-        return value == null || to(value).isEmpty() || to(value).equals("null");
+        return value == null || value.trim().isEmpty() || value.trim().equals("null");
     }
 
     /// 空数组判断
@@ -79,24 +79,42 @@ public class GTextUtils {
 
     /// 去掉字符串前后的空白字符
     public static <S extends CharSequence> String to(S text) {
-        if (text == null) return "";
+        if (isEmpty(text)) return "";
         return to(text.toString());
     }
 
     public static String to(String value) {
-        if (value == null) return "";
+        if (isEmpty(value)) return "";
         return value.trim();
     }
 
     /// 去掉字符串中的所有空白字符
     public static <S extends CharSequence> String toAll(S text) {
-        if (text == null) return "";
+        if (isEmpty(text)) return "";
         return toAll(text.toString());
     }
 
     public static String toAll(String value) {
-        if (value == null) return "";
+        if (isEmpty(value)) return "";
         return value.trim().replaceAll("\\s", "");
+    }
+
+    /// 判断某个字符串是否是全空白
+    public static <S extends CharSequence> boolean isSpace(S text) {
+        if (isEmpty(text)) return true;
+        return isSpace(text.toString());
+    }
+
+    public static boolean isSpace(String value) {
+        if (isEmpty(value)) return true;
+
+        char[] chars = value.toCharArray();
+        ArrayList<Boolean> booleans = new ArrayList<>();
+        for (char aChar : chars) {
+            booleans.add(Character.isWhitespace(aChar));
+        }
+
+        return !(booleans.contains(false)); //不包含false
     }
 
     /// 字符转整型
