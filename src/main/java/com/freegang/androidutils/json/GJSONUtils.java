@@ -39,7 +39,7 @@ public class GJSONUtils {
 
     //----------- 如果指定节点存在, 则返回, 构造返回, 给定的默认值 ----------------------//
     public static String getString(JSONObject jsonObject, String key, String defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.getString(key);
         } catch (JSONException e) {
@@ -49,7 +49,7 @@ public class GJSONUtils {
     }
 
     public static Boolean getBoolean(JSONObject jsonObject, String key, Boolean defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.getBoolean(key);
         } catch (JSONException e) {
@@ -59,7 +59,7 @@ public class GJSONUtils {
     }
 
     public static Integer getInt(JSONObject jsonObject, String key, Integer defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.getInt(key);
         } catch (JSONException e) {
@@ -69,7 +69,7 @@ public class GJSONUtils {
     }
 
     public static Long getLong(JSONObject jsonObject, String key, Long defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.getLong(key);
         } catch (JSONException e) {
@@ -79,7 +79,7 @@ public class GJSONUtils {
     }
 
     public static Double getDouble(JSONObject jsonObject, String key, Double defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.getDouble(key);
         } catch (JSONException e) {
@@ -89,7 +89,7 @@ public class GJSONUtils {
     }
 
     public static Object get(JSONObject jsonObject, String key, Object defValue) {
-        if (hasKey(jsonObject, key)) return defValue;
+        if (isNull(jsonObject, key)) return defValue;
         try {
             defValue = jsonObject.get(key);
         } catch (JSONException e) {
@@ -100,7 +100,7 @@ public class GJSONUtils {
 
     //----------- 遍历某个Array节点 ----------------------//
     public static JSONObject[] getJSONArray(JSONObject jsonObject, String key) {
-        if (hasKey(jsonObject, key)) return new JSONObject[0];
+        if (isNull(jsonObject, key)) return new JSONObject[0];
 
         JSONObject[] jsonObjects = new JSONObject[0];
         try {
@@ -123,5 +123,11 @@ public class GJSONUtils {
     public static boolean hasKey(JSONObject jsonObject, String key) {
         if (jsonObject == null) return false;
         return jsonObject.has(key);
+    }
+
+    //----------- 判断某个节点是否存在, 并且值是否为 null -------------------//
+    public static boolean isNull(JSONObject jsonObject, String key) {
+        if (jsonObject == null) return false;
+        return jsonObject.isNull(key);
     }
 }
