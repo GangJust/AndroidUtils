@@ -1,4 +1,4 @@
-package com.freegang.androidutils.text;
+package com.freegang.utils.text;
 
 
 import java.util.ArrayList;
@@ -85,6 +85,11 @@ public class GTextUtils {
     }
 
     /// 字符比较, 与给定字符串数组做比较, 如果有任意一项匹配, 都表示匹配成功.
+    public static <S extends CharSequence> boolean anyEquals(S value, String... equals) {
+        if (value == null) return false;
+        return anyEquals(value.toString(), equals);
+    }
+	
     public static boolean anyEquals(String value, String... equals) {
         if (value == null || equals == null || equals.length == 0) return false;
         for (String e : equals) {
@@ -188,6 +193,39 @@ public class GTextUtils {
         return value;
     }
 
+    /// 字符转整型
+    public static <S extends CharSequence> Integer toInt(S text) {
+        return toInt(text.toString());
+    }
+
+    public static Integer toInt(String str) {
+        return Integer.parseInt(to(str), 10);
+    }
+
+    public static Integer toInt(String str, int radix) {
+        return Integer.parseInt(str, radix);
+    }
+
+    /// 字符转单精度小数
+    public static <S extends CharSequence> Float toFloat(S text) {
+        return toFloat(text.toString());
+    }
+
+    public static Float toFloat(String str) {
+        return Float.parseFloat(to(str));
+    }
+
+    /// 字符双精度小数
+    public static <S extends CharSequence> Double toDouble(S text) {
+        return toDouble(text.toString());
+    }
+
+    public static Double toDouble(String str) {
+        return Double.parseDouble(to(str));
+    }
+
+    // ------------More------------ //
+
     /// 某个字符串不足最小指定长度, 左填充指定字符
     public static String padLeft(String value, int minLength, char pad) {
         if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
@@ -271,36 +309,5 @@ public class GTextUtils {
             builder.append((char) Integer.parseInt(target, 16));
         }
         return builder.toString();
-    }
-
-    /// 字符转整型
-    public static <S extends CharSequence> Integer toInt(S text) {
-        return toInt(text.toString());
-    }
-
-    public static Integer toInt(String str) {
-        return Integer.parseInt(to(str), 10);
-    }
-
-    public static Integer toInt(String str, int radix) {
-        return Integer.parseInt(str, radix);
-    }
-
-    /// 字符转单精度小数
-    public static <S extends CharSequence> Float toFloat(S text) {
-        return toFloat(text.toString());
-    }
-
-    public static Float toFloat(String str) {
-        return Float.parseFloat(to(str));
-    }
-
-    /// 字符双精度小数
-    public static <S extends CharSequence> Double toDouble(S text) {
-        return toDouble(text.toString());
-    }
-
-    public static Double toDouble(String str) {
-        return Double.parseDouble(to(str));
     }
 }
