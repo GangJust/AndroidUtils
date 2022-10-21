@@ -1,4 +1,4 @@
-package com.freegang.utils.json;
+package com.freegang.androidutils.json;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -7,13 +7,21 @@ import org.json.JSONObject;
 import java.nio.channels.OverlappingFileLockException;
 
 /**
- * JsonUtils
+ * org.json
+ * <p>
+ * GJSONUtils
  */
 public class GJSONUtils {
     private GJSONUtils() {
         ///
     }
 
+    /**
+     * 解析具有json格式的字符串
+     *
+     * @param jsonStr
+     * @return
+     */
     public static JSONObject parse(String jsonStr) {
         JSONObject jsonObject = new JSONObject();
         try {
@@ -24,6 +32,12 @@ public class GJSONUtils {
         return jsonObject;
     }
 
+    /**
+     * 解析具有jsonArray格式的字符串
+     *
+     * @param jsonStr
+     * @return
+     */
     public static JSONArray parseArray(String jsonStr) {
         JSONArray jsonArray = new JSONArray();
         try {
@@ -34,10 +48,22 @@ public class GJSONUtils {
         return jsonArray;
     }
 
+    /**
+     * 将一个JSONObject转换为json格式的字符串
+     *
+     * @param jsonObject
+     * @return
+     */
     public static String toJson(JSONObject jsonObject) {
         return jsonObject.toString();
     }
 
+    /**
+     * 将一个JSONArray转换为jsonArray格式的字符串
+     *
+     * @param jsonArray
+     * @return
+     */
     public static String toJson(JSONArray jsonArray) {
         return jsonArray.toString();
     }
@@ -153,7 +179,7 @@ public class GJSONUtils {
     }
 
     public static String getString(JSONArray jsonArray, int index, String defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
         try {
             defValue = jsonArray.getString(index);
         } catch (JSONException e) {
@@ -163,7 +189,7 @@ public class GJSONUtils {
     }
 
     public static Boolean getBoolean(JSONArray jsonArray, int index, Boolean defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
 
         try {
             defValue = jsonArray.getBoolean(index);
@@ -174,7 +200,7 @@ public class GJSONUtils {
     }
 
     public static Integer getInt(JSONArray jsonArray, int index, Integer defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
 
         try {
             defValue = jsonArray.getInt(index);
@@ -185,7 +211,7 @@ public class GJSONUtils {
     }
 
     public static Long getLong(JSONArray jsonArray, int index, Long defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
 
         try {
             defValue = jsonArray.getLong(index);
@@ -196,7 +222,7 @@ public class GJSONUtils {
     }
 
     public static Double getDouble(JSONArray jsonArray, int index, Double defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
 
         try {
             defValue = jsonArray.getDouble(index);
@@ -207,7 +233,7 @@ public class GJSONUtils {
     }
 
     public static Object getObject(JSONArray jsonArray, int index, Object defValue) {
-        if (jsonArray.length() == 0) return defValue;
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return defValue;
 
         try {
             defValue = jsonArray.get(index);
@@ -217,7 +243,13 @@ public class GJSONUtils {
         return defValue;
     }
 
-    //----------- 如果某个子节点存在, 则返回该子节点, 否则返null -----------//
+    /**
+     * 如果某个子节点存在, 则返回该子节点, 否则返null
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
     public static JSONObject get(JSONObject jsonObject, String key) {
         if (isNull(jsonObject, key)) return new JSONObject();
         try {
@@ -228,8 +260,15 @@ public class GJSONUtils {
         return new JSONObject();
     }
 
+    /**
+     * 如果某个子节点存在, 则返回该子节点, 否则返null
+     *
+     * @param jsonArray
+     * @param index
+     * @return
+     */
     public static JSONObject get(JSONArray jsonArray, int index) {
-        if (jsonArray.length() == 0) return new JSONObject();
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return new JSONObject();
 
         try {
             return jsonArray.getJSONObject(index);
@@ -239,6 +278,13 @@ public class GJSONUtils {
         return new JSONObject();
     }
 
+    /**
+     * 如果某个子节点存在, 则返回该子节点, 否则返null
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
     public static JSONArray getArray(JSONObject jsonObject, String key) {
         if (isNull(jsonObject, key)) return new JSONArray();
         try {
@@ -249,8 +295,15 @@ public class GJSONUtils {
         return new JSONArray();
     }
 
+    /**
+     * 如果某个子节点存在, 则返回该子节点, 否则返null
+     *
+     * @param jsonArray
+     * @param index
+     * @return
+     */
     public static JSONArray getArray(JSONArray jsonArray, int index) {
-        if (jsonArray.length() == 0) return new JSONArray();
+        if (jsonArray.length() == 0 || index >= jsonArray.length()) return new JSONArray();
 
         try {
             return jsonArray.getJSONArray(index);
@@ -261,7 +314,13 @@ public class GJSONUtils {
         return new JSONArray();
     }
 
-    //----------- 将某个 JSONArray 直接打散成 JSONObject 数组 -----------//
+    /**
+     * 将某个 JSONArray 直接打散成 JSONObject 数组
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
     public static JSONObject[] getJSONArray(JSONObject jsonObject, String key) {
         if (isNull(jsonObject, key)) return new JSONObject[0];
 
@@ -275,6 +334,12 @@ public class GJSONUtils {
         return jsonObjects;
     }
 
+    /**
+     * 将某个 JSONArray 直接打散成 JSONObject 数组
+     *
+     * @param jsonArray
+     * @return
+     */
     public static JSONObject[] getJSONArray(JSONArray jsonArray) {
         if (jsonArray == null || jsonArray.length() == 0) return new JSONObject[0];
 
@@ -292,7 +357,13 @@ public class GJSONUtils {
         return jsonObjects;
     }
 
-    //获取某个key节点; keys 必须是 [从左到右] -> [从父到子] 的层级关系; 若某个key不存在, 则会直接返回 null, 该 keys 的最右边节点应该是一个 JSONObject
+    /**
+     * 获取某个key节点; keys 必须是 [从左到右] -> [从父到子] 的层级关系; 若某个key不存在, 则会直接返回 null, 该 keys 的最右边节点应该是一个 JSONObject
+     *
+     * @param jsonObject
+     * @param keys
+     * @return
+     */
     public static JSONObject getUntil(JSONObject jsonObject, String... keys) {
         JSONObject resultJSON = jsonObject;
 
@@ -308,7 +379,13 @@ public class GJSONUtils {
         return resultJSON;
     }
 
-    //获取某个key节点; keys 必须是 [从左到右] -> [从父到子] 的层级关系; 若某个key不存在, 则会直接返回 null, 该 keys 的最右边节点应该是一个 JSONArray
+    /**
+     * 获取某个key节点; keys 必须是 [从左到右] -> [从父到子] 的层级关系; 若某个key不存在, 则会直接返回 null, 该 keys 的最右边节点应该是一个 JSONArray
+     *
+     * @param jsonObject
+     * @param keys
+     * @return
+     */
     public static JSONArray getArrayUntil(JSONObject jsonObject, String... keys) {
         JSONObject resultJSON = jsonObject;
 
@@ -323,95 +400,30 @@ public class GJSONUtils {
             e.printStackTrace();
         }
 
-        return null;
+        return new JSONArray();
     }
 
-    //----------- 判断某个节点是否存在 -----------//
+    /**
+     * 判断某个节点是否存在
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
     public static boolean hasKey(JSONObject jsonObject, String key) {
         if (jsonObject == null) return false;
         return jsonObject.has(key);
     }
 
-    //----------- 判断某个节点是否存在, 并且值是否为 null -----------//
+    /**
+     * 判断某个节点是否存在, 并且值是否为 null
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
     public static boolean isNull(JSONObject jsonObject, String key) {
-        if (jsonObject == null) return false;
+        if (jsonObject == null) return true;
         return jsonObject.isNull(key);
-    }
-
-    //
-    public static class Factory {
-        private final JSONObject mJsonObject;
-
-        private JSONObject jsonObject;
-
-        public Factory(JSONObject jsonObject) {
-            this.mJsonObject = jsonObject;
-            this.jsonObject = jsonObject;
-        }
-
-        /**
-         * @param key 节点名
-         * @return 返回该[key]节点项, JSONObject 需要注意的是该项应该是 JSONObject 而不是一个value
-         */
-        public Factory get(String key) {
-            if (isNull(jsonObject, key)) throw new NullPointerException("`" + key + "` non existent!");
-
-            try {
-                jsonObject = jsonObject.getJSONObject(key);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-
-        /**
-         * @param key   节点名
-         * @param index 数组下标
-         * @return 返回该[key]节点数组下的第[index]项, 需要注意的是该项应该是 JSONObject 而不是一个value
-         * @throws IndexOutOfBoundsException
-         */
-        public Factory get(String key, int index) {
-            if (isNull(jsonObject, key)) throw new NullPointerException("`" + key + "` non existent!");
-
-            try {
-                JSONArray jsonArray = jsonObject.getJSONArray(key);
-                if (index >= jsonArray.length() || index < 0) {
-                    throw new IndexOutOfBoundsException("`" + index + "` out of bounds, current length: " + jsonArray.length());
-                }
-                jsonObject = jsonArray.getJSONObject(index);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return this;
-        }
-
-        public JSONObject originalJSONObject() {
-            return mJsonObject;
-        }
-
-        public JSONObject finalJSONObject(String key) {
-            if (isNull(jsonObject, key)) return new JSONObject();
-
-            try {
-                return jsonObject.getJSONObject(key);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        public JSONArray finalJSONArray(String key) {
-            if (isNull(jsonObject, key)) return new JSONArray();
-
-            try {
-                return jsonObject.getJSONArray(key);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
     }
 }

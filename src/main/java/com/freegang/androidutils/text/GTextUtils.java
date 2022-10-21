@@ -1,4 +1,4 @@
-package com.freegang.utils.text;
+package com.freegang.androidutils.text;
 
 
 import java.util.ArrayList;
@@ -84,12 +84,26 @@ public class GTextUtils {
         return !(booleans.contains(false)); //不包含false, 表示全部匹配
     }
 
+    /// 字符任意包含m 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
+    public static <S extends CharSequence> boolean anyContains(S text, String... comps) {
+        if (text == null) return false;
+        return anyContains(text.toString(), comps);
+    }
+
+    public static boolean anyContains(String value, String... comps) {
+        if (value == null || comps == null || comps.length == 0) return false;
+        for (String comp : comps) {
+            if (value.contains(comp)) return true;
+        }
+        return false;
+    }
+
     /// 字符比较, 与给定字符串数组做比较, 如果有任意一项匹配, 都表示匹配成功.
     public static <S extends CharSequence> boolean anyEquals(S value, String... equals) {
         if (value == null) return false;
         return anyEquals(value.toString(), equals);
     }
-	
+
     public static boolean anyEquals(String value, String... equals) {
         if (value == null || equals == null || equals.length == 0) return false;
         for (String e : equals) {
