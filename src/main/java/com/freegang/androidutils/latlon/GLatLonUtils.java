@@ -3,12 +3,12 @@ package com.freegang.androidutils.latlon;
 /**
  * 经纬度工具类
  */
-public class GLatLonUtil {
+public class GLatLonUtils {
     private static final double EARTH_RADIUS = 6371000; //地球平均半径, 单位：m
 
     private static final double EQUATOR_RADIUS = 6378137; //地球赤道半径, 单位：m
 
-    private GLatLonUtil() {
+    private GLatLonUtils() {
         ///
     }
 

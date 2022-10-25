@@ -9,9 +9,9 @@ import androidx.annotation.RequiresApi;
 /**
  * 颜色工具类
  */
-public class GColorUtil {
+public class GColorUtils {
 
-    private GColorUtil() {
+    private GColorUtils() {
         ///
     }
 

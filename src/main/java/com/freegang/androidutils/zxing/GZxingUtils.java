@@ -15,9 +15,9 @@ import com.google.zxing.qrcode.QRCodeWriter;
  * 二维码生成工具, 需要 zxing 库的支持
  */
 
-public class GZxingUtil {
+public class GZxingUtils {
 
-    private GZxingUtil() {
+    private GZxingUtils() {
         ///
     }
 

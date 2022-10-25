@@ -13,7 +13,7 @@ import java.util.TimeZone;
  * 日期时间处理相关类
  **/
 
-public class GDateUtil {
+public class GDateUtils {
 
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";

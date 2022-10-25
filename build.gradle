@@ -34,6 +34,6 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
 
-    compileOnly 'com.squareup.okhttp3:okhttp:+'
+    compileOnly 'com.squareup.okhttp3:okhttp:4.9.3'
     compileOnly 'com.google.zxing:core:+'
 }

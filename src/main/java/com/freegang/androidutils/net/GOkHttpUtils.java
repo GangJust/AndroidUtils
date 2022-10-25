@@ -46,7 +46,7 @@ import okio.Source;
  * 需要 OkHttp库支持, 如果依赖冲突, 可直接复制该类使用
  */
 
-public class GOkHttpUtil {
+public class GOkHttpUtils {
     private static final String TAG = "GOkHttpUtil";
 
     public final static int READ_TIMEOUT = 100;
@@ -55,7 +55,7 @@ public class GOkHttpUtil {
     public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_IMG_PNG = MediaType.parse("image/png");
     private static final byte[] LOCKER = new byte[0];
-    private static GOkHttpUtil mInstance;
+    private static GOkHttpUtils mInstance;
     private final OkHttpClient mOkHttpClient;
 
     /// 网络回调接口
@@ -173,18 +173,18 @@ public class GOkHttpUtil {
     /**
      * 单例模式获取OkHttpUtil
      */
-    public static GOkHttpUtil getInstance() {
+    public static GOkHttpUtils getInstance() {
         if (mInstance == null) {
             synchronized (LOCKER) {
                 if (mInstance == null) {
-                    mInstance = new GOkHttpUtil();
+                    mInstance = new GOkHttpUtils();
                 }
             }
         }
         return mInstance;
     }
 
-    private GOkHttpUtil() {
+    private GOkHttpUtils() {
         OkHttpClient.Builder ClientBuilder = new OkHttpClient.Builder();
         ClientBuilder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);//读取超时
         ClientBuilder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);//连接超时
