@@ -70,6 +70,24 @@ public class GTextUtils {
         return !isEmpties(values);
     }
 
+    /// 判断某个字符串是否是全空白
+    public static <S extends CharSequence> boolean isSpace(S text) {
+        if (isEmpty(text)) return true;
+        return isSpace(text.toString());
+    }
+
+    public static boolean isSpace(String value) {
+        if (isEmpty(value)) return true;
+
+        char[] chars = value.toCharArray();
+        ArrayList<Boolean> booleans = new ArrayList<>();
+        for (char c : chars) {
+            booleans.add(Character.isWhitespace(c));
+        }
+
+        return !(booleans.contains(false)); //不包含false
+    }
+
     /// 字符完全包含, 与给定字符串数组做匹配比较, 如果每项都包含, 则表示完全包含.
     public static <S extends CharSequence> boolean contains(S text, String... comps) {
         if (text == null) return false;
@@ -113,24 +131,6 @@ public class GTextUtils {
             if (value.equals(e)) return true;
         }
         return false;
-    }
-
-    /// 判断某个字符串是否是全空白
-    public static <S extends CharSequence> boolean isSpace(S text) {
-        if (isEmpty(text)) return true;
-        return isSpace(text.toString());
-    }
-
-    public static boolean isSpace(String value) {
-        if (isEmpty(value)) return true;
-
-        char[] chars = value.toCharArray();
-        ArrayList<Boolean> booleans = new ArrayList<>();
-        for (char c : chars) {
-            booleans.add(Character.isWhitespace(c));
-        }
-
-        return !(booleans.contains(false)); //不包含false
     }
 
     /// 去掉字符串前后的空白字符

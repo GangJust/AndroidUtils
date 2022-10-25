@@ -186,7 +186,7 @@ public class GViewUtils {
      * @param viewGroup
      * @param resultList
      */
-    public static void _traverseEnabledAll(ViewGroup viewGroup, List<Boolean> resultList) {
+    private static void _traverseEnabledAll(ViewGroup viewGroup, List<Boolean> resultList) {
         if (viewGroup.getChildCount() == 0) {
             resultList.add(viewGroup.isEnabled());
             return;
