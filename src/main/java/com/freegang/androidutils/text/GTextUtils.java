@@ -17,6 +17,9 @@ public class GTextUtils {
     //字母、数字、符号表
     public static final String charTable = "abcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+[]{}:'\"\\|,<.>/?";
 
+    //默认随机数种子
+    public static final Random defaultRandom = new Random();
+
     /// 空判断
     public static <S extends CharSequence> boolean isEmpty(S text) {
         return text == null || isEmpty(text.toString());
@@ -84,7 +87,7 @@ public class GTextUtils {
         return !(booleans.contains(false)); //不包含false, 表示全部匹配
     }
 
-    /// 字符任意包含m 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
+    /// 字符任意包含, 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
     public static <S extends CharSequence> boolean anyContains(S text, String... comps) {
         if (text == null) return false;
         return anyContains(text.toString(), comps);
@@ -242,6 +245,16 @@ public class GTextUtils {
 
     /// 某个字符串不足最小指定长度, 左填充指定字符
     public static String padLeft(String value, int minLength, char pad) {
+        return padLeftString(value, minLength, String.valueOf(pad));
+    }
+
+    /// 某个字符串不足最小指定长度, 右填充指定字符
+    public static String padRight(String value, int minLength, char pad) {
+        return padRightString(value, minLength, String.valueOf(pad));
+    }
+
+    /// 某个字符串不足最小指定长度, 左填充指定字符串
+    public static String padLeftString(String value, int minLength, String pad) {
         if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
         if (value.length() >= minLength) return value;
         StringBuilder builder = new StringBuilder();
@@ -250,8 +263,8 @@ public class GTextUtils {
         return builder.toString();
     }
 
-    /// 某个字符串不足最小指定长度, 右填充指定字符
-    public static String padRight(String value, int minLength, String pad) {
+    //// 某个字符串不足最小指定长度, 右填充指定字符串
+    public static String padRightString(String value, int minLength, String pad) {
         if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
         if (value.length() >= minLength) return value;
         StringBuilder builder = new StringBuilder();
@@ -262,7 +275,7 @@ public class GTextUtils {
 
     /// 获取随机英文字母组合
     public static String randomAlphabet() {
-        return randomAlphabet(new Random());
+        return randomAlphabet(defaultRandom);
     }
 
     public static String randomAlphabet(Random random) {
@@ -281,7 +294,7 @@ public class GTextUtils {
 
     /// 从指定样本文本中, 获取随机文本
     public static String randomText(String sample, int length) {
-        return randomText(sample, length, new Random());
+        return randomText(sample, length, defaultRandom);
     }
 
     public static String randomText(String sample, int length, Random random) {
@@ -295,7 +308,7 @@ public class GTextUtils {
 
     /// 字符串数组随机获取
     public static String random(String[] strings) {
-        return random(strings, new Random());
+        return random(strings, defaultRandom);
     }
 
     public static String random(String[] strings, Random random) {
