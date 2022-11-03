@@ -35,5 +35,5 @@ dependencies {
 
 
     compileOnly 'com.squareup.okhttp3:okhttp:4.9.3'
-    compileOnly 'com.google.zxing:core:+'
+    compileOnly 'com.google.zxing:core:3.5.0'
 }

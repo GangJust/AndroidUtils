@@ -179,12 +179,12 @@ public class GTextUtils {
     }
 
     /// 截取某字符串后面的所有内容, 成功返回操作后的值, 失败返回它本身
-    public static <S extends CharSequence> String behind(S value, String target) {
+    public static <S extends CharSequence> String after(S value, String target) {
         if (value == null) return "";
-        return behind(value.toString(), target);
+        return after(value.toString(), target);
     }
 
-    public static String behind(String value, String target) {
+    public static String after(String value, String target) {
         if (isEmpty(value) || isEmpty(target)) return "";
         if (!value.contains(target)) return value;
         return value.substring(value.indexOf(target) + target.length());

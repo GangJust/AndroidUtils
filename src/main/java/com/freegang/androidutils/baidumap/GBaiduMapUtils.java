@@ -6,7 +6,6 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.Overlay;
-import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.Polygon;
 import com.baidu.mapapi.map.PolygonOptions;
 import com.baidu.mapapi.map.Polyline;
@@ -16,7 +15,6 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.utils.SpatialRelationUtil;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,8 +31,6 @@ public class GBaiduMapUtils {
     private static List<Polygon> polygonList;
     //Polygon边框
     private static Polygon polygonStroke;
-
-    private static final byte[] lock = new byte[0];
 
     /**
      * 添加多边形悬浮
@@ -227,8 +223,6 @@ public class GBaiduMapUtils {
     }
 
     /// Overlay
-
-
     /**
      * 移除某个悬浮
      *

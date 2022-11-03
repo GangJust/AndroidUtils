@@ -14,7 +14,7 @@ public class GObjectUtils {
     }
 
     // 回调接口
-    public interface Call {
+    public interface CallElse {
         void call();
     }
 
@@ -25,7 +25,7 @@ public class GObjectUtils {
      * @param callIt
      * @param <T>
      */
-    public static <T> void call(T it, GObjectCall.CallIt<T> callIt) {
+    public static <T> void call(T it, CallIt<T> callIt) {
         if (isNotNull(it)) callIt.call(it);
     }
 
@@ -37,7 +37,7 @@ public class GObjectUtils {
      * @param call
      * @param <T>
      */
-    public static <T> void call(T it, GObjectCall.CallIt<T> callIt, GObjectCall.Call call) {
+    public static <T> void call(T it, CallIt<T> callIt, CallElse call) {
         if (isNull(it)) {
             call.call();
         } else {
@@ -53,7 +53,7 @@ public class GObjectUtils {
      * @param defaultIt
      * @param <T>
      */
-    public static <T> void call(T it, @NotNull T defaultIt, GObjectCall.CallIt<T> callIt) {
+    public static <T> void call(T it, @NotNull T defaultIt, CallIt<T> callIt) {
         if (isNull(it)) {
             callIt.call(defaultIt);
         } else {

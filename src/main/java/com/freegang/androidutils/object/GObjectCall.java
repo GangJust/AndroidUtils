@@ -12,7 +12,7 @@ public interface GObjectCall {
     }
 
     // 回调接口
-    interface Call {
+    interface CallElse {
         void call();
     }
 
@@ -35,7 +35,7 @@ public interface GObjectCall {
      * @param call
      * @param <T>
      */
-    default <T> void call(T it, CallIt<T> callIt, Call call) {
+    default <T> void call(T it, CallIt<T> callIt, CallElse call) {
         if (isNull(it)) {
             call.call();
         } else {

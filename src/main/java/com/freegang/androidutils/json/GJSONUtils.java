@@ -4,8 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.channels.OverlappingFileLockException;
-
 /**
  * org.json
  * <p>
@@ -425,5 +423,43 @@ public class GJSONUtils {
     public static boolean isNull(JSONObject jsonObject, String key) {
         if (jsonObject == null) return true;
         return jsonObject.isNull(key);
+    }
+
+    /**
+     * 某个JSONObject是否是空的
+     *
+     * @param jsonObject
+     * @return
+     */
+    public static boolean isEmpty(JSONObject jsonObject) {
+        return jsonObject.toString().equals("{}") || !jsonObject.keys().hasNext();
+    }
+
+    /**
+     * 某个JSONArray是否是空的
+     *
+     * @param jsonArray
+     * @return
+     */
+    public static boolean isEmpty(JSONArray jsonArray) {
+        return jsonArray.toString().equals("[]") || jsonArray.length() == 0;
+    }
+
+    /**
+     * 某个JSONObject是否不是空的
+     * @param jsonObject
+     * @return
+     */
+    public static boolean isNotEmpty(JSONObject jsonObject) {
+        return !isEmpty(jsonObject);
+    }
+
+    /**
+     * 某个JSONArray是否不是空的
+     * @param jsonArray
+     * @return
+     */
+    public static boolean isNotEmpty(JSONArray jsonArray) {
+        return !isEmpty(jsonArray);
     }
 }
