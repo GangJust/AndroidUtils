@@ -366,8 +366,8 @@ public class GTextUtils {
         for (String string : strings) {
             builder.append(string).append(s);
         }
-        int start = builder.length() - 1 - s.length();
-        int end = builder.length() - 1;
+        int start = builder.length() - s.length();
+        int end = builder.length();
         builder.delete(start, end);
         return builder.toString();
     }
@@ -377,8 +377,8 @@ public class GTextUtils {
         for (String string : strings) {
             builder.append(string).append(s);
         }
-        int start = builder.length() - 1 - s.length();
-        int end = builder.length() - 1;
+        int start = builder.length() - s.length();
+        int end = builder.length();
         builder.delete(start, end);
         return builder.toString();
     }
