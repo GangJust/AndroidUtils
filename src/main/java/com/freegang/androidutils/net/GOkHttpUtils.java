@@ -1,7 +1,5 @@
 package com.freegang.androidutils.net;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -58,118 +56,6 @@ public class GOkHttpUtils {
     private static GOkHttpUtils mInstance;
     private final OkHttpClient mOkHttpClient;
 
-    /// 网络回调接口
-    public interface RespCall {
-        void failed(@NonNull Call call, IOException e);
-
-        void success(@NonNull Call call, @NonNull Response response) throws IOException;
-    }
-
-    public interface RespCallUI {
-        void failed(@NonNull Call call, IOException e);
-
-        void success(@NonNull Call call, @NonNull Response response) throws IOException;
-    }
-
-    // =================== 上传监听 ====================== //
-    /// 上传进度监听接口
-    public interface UploadProgressListener {
-        void onProgress(long speed, long total, boolean done);
-    }
-
-    /// 上传响应, 重新包装
-    private static class ProgressResponseBody extends ResponseBody {
-
-        private final ResponseBody mResponseBody;
-        private final UploadProgressListener progressListener;
-        private BufferedSource bufferedSource;
-
-        ProgressResponseBody(ResponseBody mResponseBody, UploadProgressListener progressListener) {
-            this.mResponseBody = mResponseBody;
-            this.progressListener = progressListener;
-        }
-
-        /**
-         * 重写调用实际的响应体的contentLength
-         *
-         * @return contentLength
-         */
-        @Override
-        public long contentLength() {
-            return mResponseBody.contentLength();
-        }
-
-        /**
-         * 重写调用实际的响应体的contentType
-         *
-         * @return MediaType
-         */
-        @Nullable
-        @Override
-        public MediaType contentType() {
-            return mResponseBody.contentType();
-        }
-
-        /**
-         * 重写进行包装source
-         *
-         * @return BufferedSource
-         */
-        @NonNull
-        @Override
-        public BufferedSource source() {
-            if (bufferedSource == null) {
-                bufferedSource = Okio.buffer(source(mResponseBody.source()));
-            }
-            return bufferedSource;
-        }
-
-        /**
-         * 读取，回调进度接口
-         *
-         * @param source Source
-         * @return Source
-         */
-        private Source source(Source source) {
-
-            return new ForwardingSource(source) {
-                //当前读取字节数
-                long totalBytesRead = 0L;
-
-                @Override
-                public long read(@NonNull Buffer sink, long byteCount) throws IOException {
-                    long bytesRead = super.read(sink, byteCount);
-                    //增加当前读取的字节数，如果读取完成了bytesRead会返回-1
-                    totalBytesRead += bytesRead != -1 ? bytesRead : 0;
-                    //回调，如果contentLength()长度未知，会返回-1
-                    progressListener.onProgress(totalBytesRead, mResponseBody.contentLength(), bytesRead == -1);
-                    return bytesRead;
-                }
-            };
-        }
-    }
-
-    /// 上传拦截器, 在这里重写响应 [ProgressResponseBody]
-    private static class ProgressResponseInterceptor implements Interceptor {
-        private final UploadProgressListener progressListener;
-
-        ProgressResponseInterceptor(UploadProgressListener progressListener) {
-            this.progressListener = progressListener;
-        }
-
-        @NonNull
-        @Override
-        public Response intercept(@NonNull Chain chain) throws IOException {
-            Response response = chain.proceed(chain.request());
-            return response
-                    .newBuilder()
-                    .code(response.code())
-                    .headers(response.headers())
-                    .body(new ProgressResponseBody(response.body(), progressListener))
-                    .build();
-        }
-    }
-
     /**
      * 单例模式获取OkHttpUtil
      */
@@ -200,9 +86,6 @@ public class GOkHttpUtils {
         mOkHttpClient = ClientBuilder.build();
     }
 
-    // ============== 同步请求 ============== //
-
-
     /**
      * get请求，同步方式，获取网络数据
      *
@@ -214,7 +97,7 @@ public class GOkHttpUtils {
     }
 
     /**
-     * post请求，同步方式，提交数据
+     * post请求，同步方式，提交数据获取响应
      *
      * @param url
      * @param bodyParams
@@ -225,7 +108,7 @@ public class GOkHttpUtils {
     }
 
     /**
-     * post请求，同步方式，提交JSON数据
+     * post请求，同步方式，提交JSON数据获取响应
      *
      * @param url
      * @param json
@@ -268,32 +151,30 @@ public class GOkHttpUtils {
     }
 
 
-    // ============== 异步请求 ============== //
-
     /**
-     * get请求，异步方式，获取网络数据
+     * get请求，异步方式，获取响应
      *
      * @param url
      * @param respCall
      * @return
      */
-    public void getDataAsync(String url, RespCall respCall) {
+    public void getDataAsync(String url, final RespCall respCall) {
         executeAsync(url, "GET", null, respCall);
     }
 
     /**
-     * post请求，异步方式，提交数据
+     * post请求，异步方式，提交数据获取响应
      *
      * @param url
      * @param bodyParams
      * @param respCall
      */
-    public void postDataAsync(String url, Map<String, String> bodyParams, RespCall respCall) {
+    public void postDataAsync(String url, Map<String, String> bodyParams, final RespCall respCall) {
         executeAsync(url, "POST", buildFormBody(bodyParams), respCall);
     }
 
     /**
-     * post请求，异步方式，提交JSON格式数据
+     * post请求，异步方式，提交JSON格式数据获取响应
      *
      * @param url
      * @param json
@@ -304,7 +185,15 @@ public class GOkHttpUtils {
         executeAsync(url, "POST", buildJsonBody(json), respCall);
     }
 
-    public void executeAsync(String url, String method, RequestBody requestBody, RespCall respCall) {
+    /**
+     * 异步请求, 通过 respCall进行请求回调, 非UI线程
+     *
+     * @param url
+     * @param method
+     * @param requestBody
+     * @param respCall
+     */
+    public void executeAsync(String url, String method, RequestBody requestBody, final RespCall respCall) {
         executeAsync(url, method, Headers.of(), requestBody, respCall);
     }
 
@@ -317,7 +206,7 @@ public class GOkHttpUtils {
      * @param requestBody
      * @param respCall
      */
-    public void executeAsync(String url, String method, Headers headers, RequestBody requestBody, RespCall respCall) {
+    public void executeAsync(String url, String method, Headers headers, RequestBody requestBody, final RespCall respCall) {
         //构造Request
         Request request = new Request.Builder()
                 .headers(headers)
@@ -340,13 +229,154 @@ public class GOkHttpUtils {
         });
     }
 
-    // ============== 文件上传 ============== //
+
+    /**
+     * get请求, 异步方式, 获取响应体内容
+     *
+     * @param url
+     * @param respCallBody
+     */
+    public void getDataAsync(String url, RespCallBody respCallBody) {
+        executeAsync(url, "GET", null, new RespCall() {
+            @Override
+            public void failed(@NonNull Call call, IOException e) {
+                respCallBody.onResponseBody(-1, e.getMessage());
+            }
+
+            @Override
+            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    respCallBody.onResponseBody(response.code(), responseBody.string());
+                } else {
+                    respCallBody.onResponseBody(response.code(), "");
+                }
+                response.close();
+            }
+        });
+    }
+
+    /**
+     * post请求, 异步方式, 获取响应体内容
+     *
+     * @param url
+     * @param bodyParams
+     * @param respCallBody
+     */
+    public void postDataAsync(String url, Map<String, String> bodyParams, final RespCallBody respCallBody) {
+        executeAsync(url, "POST", buildFormBody(bodyParams), new RespCall() {
+            @Override
+            public void failed(@NonNull Call call, IOException e) {
+                respCallBody.onResponseBody(-1, e.getMessage());
+            }
+
+            @Override
+            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    respCallBody.onResponseBody(response.code(), responseBody.string());
+                } else {
+                    respCallBody.onResponseBody(response.code(), "");
+                }
+                response.close();
+            }
+        });
+    }
+
+    /**
+     * post请求，异步方式，提交JSON格式数据获取响应
+     *
+     * @param url
+     * @param json
+     * @return
+     * @throws IOException
+     */
+    public void postJsonAsync(String url, String json, RespCallBody respCallBody) {
+        executeAsync(url, "POST", buildJsonBody(json), new RespCall() {
+            @Override
+            public void failed(@NonNull Call call, IOException e) {
+                respCallBody.onResponseBody(-1, e.getMessage());
+            }
+
+            @Override
+            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    respCallBody.onResponseBody(response.code(), responseBody.string());
+                } else {
+                    respCallBody.onResponseBody(response.code(), "");
+                }
+                response.close();
+            }
+        });
+    }
+
+    /**
+     * 异步请求
+     *
+     * @param url
+     * @param method
+     * @param requestBody
+     * @param respCallBody
+     */
+    public void executeAsync(String url, String method, RequestBody requestBody, final RespCallBody respCallBody) {
+        executeAsync(url, method, Headers.of(), requestBody, respCallBody);
+    }
+
+    /**
+     * 异步请求方式, 通过 respCall进行请求回调, 非UI线程
+     *
+     * @param url
+     * @param method
+     * @param headers
+     * @param requestBody
+     * @param respCallBody
+     */
+    public void executeAsync(String url, String method, Headers headers, RequestBody requestBody, final RespCallBody respCallBody) {
+        //构造Request
+        Request request = new Request.Builder()
+                .headers(headers)
+                .method(method, requestBody)
+                .url(url)
+                .build();
+        //将Request封装为Call
+        Call call = mOkHttpClient.newCall(request);
+        //执行Call
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                respCallBody.onResponseBody(-1, e.getMessage());
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    respCallBody.onResponseBody(response.code(), responseBody.string());
+                } else {
+                    respCallBody.onResponseBody(response.code(), "");
+                }
+                response.close();
+            }
+        });
+    }
+
+
+    /**
+     * 文件上传
+     *
+     * @param url
+     * @param method
+     * @param types
+     * @param files
+     * @param listener
+     */
     public void uploadFile(String url, String method, MediaType[] types, File[] files, UploadProgressListener listener) {
         uploadFile(url, method, types, files, null, listener);
     }
 
     /**
-     * 文件上传, 非UI线程
+     * 文件上传
      *
      * @param url
      * @param method
@@ -380,36 +410,6 @@ public class GOkHttpUtils {
         }
     }
 
-
-    // ============== 文件上传(UI) ============== //
-    public void uploadFileUI(String url, String method, MediaType[] types, File[] files, UploadProgressListener listener) {
-        uploadFileUI(url, method, types, files, null, listener);
-    }
-
-    /**
-     * 文件上传, UI线程
-     *
-     * @param url
-     * @param method
-     * @param types
-     * @param files
-     * @param bodyParams
-     * @param listener
-     */
-    public void uploadFileUI(String url, String method, MediaType[] types, File[] files, Map<String, String> bodyParams, UploadProgressListener listener) {
-        //使用Handler代理用户传过来的Listener
-        final UploadProgressListener mListener = new UploadProgressListener() {
-            @Override
-            public void onProgress(long speed, long total, boolean done) {
-                new Handler(Looper.getMainLooper()).post(() -> listener.onProgress(speed, total, done));
-            }
-        };
-        //调用文件上传
-        uploadFile(url, method, types, files, bodyParams, mListener);
-    }
-
-
-    // ============== 构建各种请求 ============== //
 
     /**
      * Form表单格式, 请求参数, 构造RequestBody
@@ -484,8 +484,6 @@ public class GOkHttpUtils {
     }
 
 
-    // ============== 证书 =========== //
-
     /**
      * 生成安全套接字工厂，用于https请求的证书跳过
      *
@@ -518,6 +516,126 @@ public class GOkHttpUtils {
         @Override
         public X509Certificate[] getAcceptedIssuers() {
             return new X509Certificate[0];
+        }
+    }
+
+    /**
+     * 响应回调接口
+     */
+    public interface RespCall {
+        void failed(@NonNull Call call, IOException e);
+
+        void success(@NonNull Call call, @NonNull Response response) throws IOException;
+    }
+
+    /**
+     * 响应回调接口, 返回响应体内容
+     */
+    public interface RespCallBody {
+        void onResponseBody(int statusCode, String body);
+    }
+
+    /**
+     * 上传进度监听接口
+     */
+    public interface UploadProgressListener {
+        void onProgress(long speed, long total, boolean done);
+    }
+
+    /**
+     * 上传响应, 重新包装
+     */
+    private static class ProgressResponseBody extends ResponseBody {
+
+        private final ResponseBody mResponseBody;
+        private final UploadProgressListener progressListener;
+        private BufferedSource bufferedSource;
+
+        ProgressResponseBody(ResponseBody mResponseBody, UploadProgressListener progressListener) {
+            this.mResponseBody = mResponseBody;
+            this.progressListener = progressListener;
+        }
+
+        /**
+         * 重写调用实际的响应体的contentLength
+         *
+         * @return contentLength
+         */
+        @Override
+        public long contentLength() {
+            return mResponseBody.contentLength();
+        }
+
+        /**
+         * 重写调用实际的响应体的contentType
+         *
+         * @return MediaType
+         */
+        @Nullable
+        @Override
+        public MediaType contentType() {
+            return mResponseBody.contentType();
+        }
+
+        /**
+         * 重写进行包装source
+         *
+         * @return BufferedSource
+         */
+        @NonNull
+        @Override
+        public BufferedSource source() {
+            if (bufferedSource == null) {
+                bufferedSource = Okio.buffer(source(mResponseBody.source()));
+            }
+            return bufferedSource;
+        }
+
+        /**
+         * 读取，回调进度接口
+         *
+         * @param source Source
+         * @return Source
+         */
+        private Source source(Source source) {
+
+            return new ForwardingSource(source) {
+                //当前读取字节数
+                long totalBytesRead = 0L;
+
+                @Override
+                public long read(@NonNull Buffer sink, long byteCount) throws IOException {
+                    long bytesRead = super.read(sink, byteCount);
+                    //增加当前读取的字节数，如果读取完成了bytesRead会返回-1
+                    totalBytesRead += bytesRead != -1 ? bytesRead : 0;
+                    //回调，如果contentLength()长度未知，会返回-1
+                    progressListener.onProgress(totalBytesRead, mResponseBody.contentLength(), bytesRead == -1);
+                    return bytesRead;
+                }
+            };
+        }
+    }
+
+    /**
+     * 上传拦截器, 在这里重写响应 [ProgressResponseBody]
+     */
+    private static class ProgressResponseInterceptor implements Interceptor {
+        private final UploadProgressListener progressListener;
+
+        ProgressResponseInterceptor(UploadProgressListener progressListener) {
+            this.progressListener = progressListener;
+        }
+
+        @NonNull
+        @Override
+        public Response intercept(@NonNull Chain chain) throws IOException {
+            Response response = chain.proceed(chain.request());
+            return response
+                    .newBuilder()
+                    .code(response.code())
+                    .headers(response.headers())
+                    .body(new ProgressResponseBody(response.body(), progressListener))
+                    .build();
         }
     }
 }

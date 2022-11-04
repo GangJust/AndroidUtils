@@ -462,7 +462,7 @@ public class GDateUtils {
      * @param year
      * @return
      */
-    public static boolean isLeap(int year) {
+    public static boolean isLeapYear(int year) {
         return ((year % 100 == 0) && year % 400 == 0) || ((year % 100 != 0) && year % 4 == 0);
     }
 }

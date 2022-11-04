@@ -2,6 +2,7 @@ package com.freegang.androidutils.text;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Random;
 
 /// 字符串工具类
@@ -20,7 +21,13 @@ public class GTextUtils {
     //默认随机数种子
     public static final Random defaultRandom = new Random();
 
-    /// 空判断
+    /**
+     * 空字符串判断
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean isEmpty(S text) {
         return text == null || isEmpty(text.toString());
     }
@@ -29,7 +36,13 @@ public class GTextUtils {
         return value == null || value.trim().isEmpty() || value.trim().equals("null");
     }
 
-    /// 空数组判断
+    /**
+     * 空字符串数组判断
+     *
+     * @param texts
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean isEmpties(S... texts) {
         if (texts.length == 0) return true;
 
@@ -52,7 +65,13 @@ public class GTextUtils {
         return !(booleans.contains(false)); //当不包含false, 表示整个数组都是空的
     }
 
-    /// 非空判断
+    /**
+     * 非空字符串判断
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean isNotEmpty(S text) {
         return !isEmpty(text);
     }
@@ -61,7 +80,13 @@ public class GTextUtils {
         return !isEmpty(value);
     }
 
-    /// 非空数组判断
+    /**
+     * 非空字符串数组判断
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean isNotEmpties(S... text) {
         return !isEmpties(text);
     }
@@ -70,7 +95,13 @@ public class GTextUtils {
         return !isEmpties(values);
     }
 
-    /// 判断某个字符串是否是全空白
+    /**
+     * 判断某个字符串是否是全空白
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean isSpace(S text) {
         if (isEmpty(text)) return true;
         return isSpace(text.toString());
@@ -88,7 +119,14 @@ public class GTextUtils {
         return !(booleans.contains(false)); //不包含false
     }
 
-    /// 字符完全包含, 与给定字符串数组做匹配比较, 如果每项都包含, 则表示完全包含.
+    /**
+     * 字符完全包含, 与给定字符串数组做匹配比较, 如果每项都包含, 则表示完全包含.
+     *
+     * @param text
+     * @param comps
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean contains(S text, String... comps) {
         if (text == null) return false;
         return contains(text.toString(), comps);
@@ -105,7 +143,14 @@ public class GTextUtils {
         return !(booleans.contains(false)); //不包含false, 表示全部匹配
     }
 
-    /// 字符任意包含, 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
+    /**
+     * 字符任意包含, 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
+     *
+     * @param text
+     * @param comps
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean anyContains(S text, String... comps) {
         if (text == null) return false;
         return anyContains(text.toString(), comps);
@@ -119,7 +164,14 @@ public class GTextUtils {
         return false;
     }
 
-    /// 字符比较, 与给定字符串数组做比较, 如果有任意一项匹配, 都表示匹配成功.
+    /**
+     * 字符比较, 与给定字符串数组做比较, 如果有任意一项匹配, 都表示匹配成功.
+     *
+     * @param value
+     * @param equals
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> boolean anyEquals(S value, String... equals) {
         if (value == null) return false;
         return anyEquals(value.toString(), equals);
@@ -133,7 +185,13 @@ public class GTextUtils {
         return false;
     }
 
-    /// 去掉字符串前后的空白字符
+    /**
+     * 去掉字符串前后的空白字符
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String to(S text) {
         if (isEmpty(text)) return "";
         return to(text.toString());
@@ -144,7 +202,13 @@ public class GTextUtils {
         return value.trim();
     }
 
-    /// 去掉字符串中的所有空白字符
+    /**
+     * 去掉字符串中的所有空白字符
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String toAll(S text) {
         if (isEmpty(text)) return "";
         return toAll(text.toString());
@@ -155,7 +219,14 @@ public class GTextUtils {
         return value.trim().replaceAll("\\s", "");
     }
 
-    /// 如果某个字符为空, 则返回给定默认值
+    /**
+     * 如果某个字符为空, 则返回给定默认值
+     *
+     * @param maybeNullValue
+     * @param defaultValue
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String get(S maybeNullValue, String defaultValue) {
         if (maybeNullValue == null) return defaultValue;
         return get(maybeNullValue.toString(), defaultValue);
@@ -166,7 +237,14 @@ public class GTextUtils {
         return maybeNullValue;
     }
 
-    /// 截取某字符串前面的所有内容, 成功返回操作后的值, 失败返回它本身
+    /**
+     * 截取某字符串前面的所有内容, 成功返回操作后的值, 失败返回它本身
+     *
+     * @param value
+     * @param target
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String front(S value, String target) {
         if (value == null) return "";
         return front(value.toString(), target);
@@ -178,7 +256,14 @@ public class GTextUtils {
         return value.substring(0, value.indexOf(target));
     }
 
-    /// 截取某字符串后面的所有内容, 成功返回操作后的值, 失败返回它本身
+    /**
+     * 截取某字符串后面的所有内容, 成功返回操作后的值, 失败返回它本身
+     *
+     * @param value
+     * @param target
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String after(S value, String target) {
         if (value == null) return "";
         return after(value.toString(), target);
@@ -190,7 +275,15 @@ public class GTextUtils {
         return value.substring(value.indexOf(target) + target.length());
     }
 
-    /// 截取某字符串中间的内容, 成功返回操作后的值, 失败返回它本身
+    /**
+     * 截取某字符串中间的内容, 成功返回操作后的值, 失败返回它本身
+     *
+     * @param value
+     * @param start
+     * @param end
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> String middle(S value, String start, String end) {
         if (value == null) return "";
         return middle(value.toString(), start, end);
@@ -210,7 +303,13 @@ public class GTextUtils {
         return value;
     }
 
-    /// 字符转整型
+    /**
+     * 字符转整型
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> Integer toInt(S text) {
         return toInt(text.toString());
     }
@@ -223,7 +322,13 @@ public class GTextUtils {
         return Integer.parseInt(str, radix);
     }
 
-    /// 字符转单精度小数
+    /**
+     * 字符转单精度小数
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> Float toFloat(S text) {
         return toFloat(text.toString());
     }
@@ -232,7 +337,13 @@ public class GTextUtils {
         return Float.parseFloat(to(str));
     }
 
-    /// 字符双精度小数
+    /**
+     * 字符双精度小数
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
     public static <S extends CharSequence> Double toDouble(S text) {
         return toDouble(text.toString());
     }
@@ -243,28 +354,61 @@ public class GTextUtils {
 
     // ------------More------------ //
 
-    /// 某个字符串不足最小指定长度, 左填充指定字符
+    /**
+     * 将一个字符串数组拼接成一个字符串, 用指定文本分割。
+     *
+     * @param strings ["a", "b", "s"]
+     * @param s       `!`
+     * @return "a!b!s"
+     */
+    public static String splicing(String[] strings, String s) {
+        StringBuilder builder = new StringBuilder();
+        for (String string : strings) {
+            builder.append(string).append(s);
+        }
+        int start = builder.length() - 1 - s.length();
+        int end = builder.length() - 1;
+        builder.delete(start, end);
+        return builder.toString();
+    }
+
+    public static String splicing(Collection<String> strings, String s) {
+        StringBuilder builder = new StringBuilder();
+        for (String string : strings) {
+            builder.append(string).append(s);
+        }
+        int start = builder.length() - 1 - s.length();
+        int end = builder.length() - 1;
+        builder.delete(start, end);
+        return builder.toString();
+    }
+
+    /**
+     * 某个字符串不足最小指定长度, 左填充指定字符
+     *
+     * @param value     "Hello"
+     * @param minLength 8
+     * @param pad       '0'
+     * @return "000Hello"
+     */
     public static String padLeft(String value, int minLength, char pad) {
-        return padLeftString(value, minLength, String.valueOf(pad));
+        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
+        if (value.length() >= minLength) return value;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < minLength - value.length(); i++) builder.append(pad);
+        builder.append(value);
+        return builder.toString();
     }
 
-    /// 某个字符串不足最小指定长度, 右填充指定字符
+    /**
+     * 某个字符串不足最小指定长度, 右填充指定字符
+     *
+     * @param value     "Hello"
+     * @param minLength 8
+     * @param pad       '0'
+     * @return "Hello000"
+     */
     public static String padRight(String value, int minLength, char pad) {
-        return padRightString(value, minLength, String.valueOf(pad));
-    }
-
-    /// 某个字符串不足最小指定长度, 左填充指定字符串
-    public static String padLeftString(String value, int minLength, String pad) {
-        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
-        if (value.length() >= minLength) return value;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < minLength - value.length(); i++) builder.append(pad);
-        builder.append(value);
-        return builder.toString();
-    }
-
-    //// 某个字符串不足最小指定长度, 右填充指定字符串
-    public static String padRightString(String value, int minLength, String pad) {
         if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
         if (value.length() >= minLength) return value;
         StringBuilder builder = new StringBuilder();
@@ -273,26 +417,41 @@ public class GTextUtils {
         return builder.toString();
     }
 
-    /// 获取随机英文字母组合
-    public static String randomAlphabet() {
-        return randomAlphabet(defaultRandom);
+    /**
+     * 获取随机符号表组合
+     *
+     * @return 从符号表中随机返回任意长度的乱序字符串
+     */
+    public static String randomCharTable() {
+        return randomCharTable(defaultRandom);
     }
 
-    public static String randomAlphabet(Random random) {
-        int length = random.nextInt();
+    public static String randomCharTable(Random random) {
+        int length = random.nextInt(charTable.length());
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < length; i++) {
             //随机大小写
+            char c = charTable.charAt(i);
             if (random.nextInt() % random.nextInt() != 0) {
-                builder.append(alphabets.charAt(i));
+                builder.append(c);
             } else {
-                builder.append((char) (alphabets.codePointAt(i) - 32));
+                if (c >= 'a' && c <= 'z') {
+                    builder.append((char) (c - 32));
+                } else {
+                    builder.append(c);
+                }
             }
         }
         return builder.toString();
     }
 
-    /// 从指定样本文本中, 获取随机文本
+    /**
+     * 从指定样本文本中, 获取随机文本
+     *
+     * @param sample "abcdef"
+     * @param length 3
+     * @return "aba" or "abd" or ....
+     */
     public static String randomText(String sample, int length) {
         return randomText(sample, length, defaultRandom);
     }
@@ -306,7 +465,12 @@ public class GTextUtils {
         return builder.toString();
     }
 
-    /// 字符串数组随机获取
+    /**
+     * 字符串数组随机获取
+     *
+     * @param strings "abcd"
+     * @return 随机从 abcd 四个字母中返回随机的字母
+     */
     public static String random(String[] strings) {
         return random(strings, defaultRandom);
     }
@@ -315,7 +479,12 @@ public class GTextUtils {
         return strings[random.nextInt(strings.length)];
     }
 
-    /// unicode编码, Example: 中国
+    /**
+     * unicode编码
+     *
+     * @param unicode "中国"
+     * @return "\u4e2d\u56fd"
+     */
     public static String enUnicode(String unicode) {
         StringBuilder builder = new StringBuilder();
         char[] chars = unicode.toCharArray();
@@ -327,7 +496,12 @@ public class GTextUtils {
         return builder.toString();
     }
 
-    /// unicode解码, Example: \u4e2d\u56fd
+    /**
+     * unicode解码
+     *
+     * @param unicode "\u4e2d\u56fd"
+     * @return "中国"
+     */
     public static String deUnicode(String unicode) {
         StringBuilder builder = new StringBuilder();
         String[] split = unicode.split("\\\\u");
