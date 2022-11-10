@@ -2,6 +2,7 @@ package com.freegang.androidutils.text;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
@@ -219,8 +220,9 @@ public class GTextUtils {
         return value.trim().replaceAll("\\s", "");
     }
 
+
     /**
-     * 如果某个字符为空, 则返回给定默认值
+     * 如果某个字符为空, 则返回给定默认字符串
      *
      * @param maybeNullValue
      * @param defaultValue
@@ -235,6 +237,18 @@ public class GTextUtils {
     public static String get(String maybeNullValue, String defaultValue) {
         if (isEmpty(maybeNullValue)) return defaultValue;
         return maybeNullValue;
+    }
+
+    /**
+     * 如果某个对象为空, 则返回给定的默认字符串, 否则调用它的toString()
+     *
+     * @param maybeNull
+     * @param defaultValue
+     * @return
+     */
+    public static String get(Object maybeNull, String defaultValue) {
+        if (maybeNull == null) return defaultValue;
+        return maybeNull.toString();
     }
 
     /**
@@ -355,24 +369,19 @@ public class GTextUtils {
     // ------------More------------ //
 
     /**
-     * 将一个字符串数组拼接成一个字符串, 用指定文本分割。
+     * 将一个字符串数组拼接成一个字符串, 用指定文本分割, 若操作失败, 则返回 "" 字符串
      *
      * @param strings ["a", "b", "s"]
      * @param s       `!`
      * @return "a!b!s"
      */
     public static String splicing(String[] strings, String s) {
-        StringBuilder builder = new StringBuilder();
-        for (String string : strings) {
-            builder.append(string).append(s);
-        }
-        int start = builder.length() - s.length();
-        int end = builder.length();
-        builder.delete(start, end);
-        return builder.toString();
+        return splicing(new ArrayList<>(Arrays.asList(strings)), s);
     }
 
     public static String splicing(Collection<String> strings, String s) {
+        if (strings == null || strings.isEmpty()) return "";
+
         StringBuilder builder = new StringBuilder();
         for (String string : strings) {
             builder.append(string).append(s);
