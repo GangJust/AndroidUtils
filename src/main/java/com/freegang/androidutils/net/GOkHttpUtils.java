@@ -77,12 +77,7 @@ public class GOkHttpUtils {
         ClientBuilder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);//写入超时
         //支持HTTPS请求，跳过证书验证
         ClientBuilder.sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts());
-        ClientBuilder.hostnameVerifier(new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        });
+        ClientBuilder.hostnameVerifier((hostname, session) -> true);
         mOkHttpClient = ClientBuilder.build();
     }
 
@@ -138,16 +133,15 @@ public class GOkHttpUtils {
                 .method(method, requestBody)
                 .url(url)
                 .build();
-        //3 将Request封装为Call
+        //将Request封装为Call
         Call call = mOkHttpClient.newCall(request);
-        //4 执行Call，得到response
-        Response response = null;
-        try {
-            response = call.execute();
+        //执行Call，得到response
+        try (Response response = call.execute()) {
+            return response;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return response;
+        return null;
     }
 
 
@@ -237,23 +231,7 @@ public class GOkHttpUtils {
      * @param respCallBody
      */
     public void getDataAsync(String url, RespCallBody respCallBody) {
-        executeAsync(url, "GET", null, new RespCall() {
-            @Override
-            public void failed(@NonNull Call call, IOException e) {
-                respCallBody.onResponseBody(-1, e.getMessage());
-            }
-
-            @Override
-            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                if (responseBody != null) {
-                    respCallBody.onResponseBody(response.code(), responseBody.string());
-                } else {
-                    respCallBody.onResponseBody(response.code(), "");
-                }
-                response.close();
-            }
-        });
+        executeAsync(url, "GET", null, respCallBody);
     }
 
     /**
@@ -264,23 +242,7 @@ public class GOkHttpUtils {
      * @param respCallBody
      */
     public void postDataAsync(String url, Map<String, String> bodyParams, final RespCallBody respCallBody) {
-        executeAsync(url, "POST", buildFormBody(bodyParams), new RespCall() {
-            @Override
-            public void failed(@NonNull Call call, IOException e) {
-                respCallBody.onResponseBody(-1, e.getMessage());
-            }
-
-            @Override
-            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                if (responseBody != null) {
-                    respCallBody.onResponseBody(response.code(), responseBody.string());
-                } else {
-                    respCallBody.onResponseBody(response.code(), "");
-                }
-                response.close();
-            }
-        });
+        executeAsync(url, "POST", buildFormBody(bodyParams), respCallBody);
     }
 
     /**
@@ -292,23 +254,7 @@ public class GOkHttpUtils {
      * @throws IOException
      */
     public void postJsonAsync(String url, String json, RespCallBody respCallBody) {
-        executeAsync(url, "POST", buildJsonBody(json), new RespCall() {
-            @Override
-            public void failed(@NonNull Call call, IOException e) {
-                respCallBody.onResponseBody(-1, e.getMessage());
-            }
-
-            @Override
-            public void success(@NonNull Call call, @NonNull Response response) throws IOException {
-                ResponseBody responseBody = response.body();
-                if (responseBody != null) {
-                    respCallBody.onResponseBody(response.code(), responseBody.string());
-                } else {
-                    respCallBody.onResponseBody(response.code(), "");
-                }
-                response.close();
-            }
-        });
+        executeAsync(url, "POST", buildJsonBody(json), respCallBody);
     }
 
     /**
@@ -400,9 +346,8 @@ public class GOkHttpUtils {
                 .addInterceptor(new ProgressResponseInterceptor(listener))
                 .build();
         //执行请求
-        Response response = null;
         try {
-            response = client.newCall(request).execute();
+            Response response = client.newCall(request).execute();
             boolean successful = response.isSuccessful();
             //todo 其他操作
         } catch (IOException e) {
@@ -598,7 +543,6 @@ public class GOkHttpUtils {
          * @return Source
          */
         private Source source(Source source) {
-
             return new ForwardingSource(source) {
                 //当前读取字节数
                 long totalBytesRead = 0L;
