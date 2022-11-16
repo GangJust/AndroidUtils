@@ -316,7 +316,7 @@ public class GTextUtils {
         }
         return value;
     }
-
+    
     /**
      * 字符转整型
      *
@@ -325,14 +325,22 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Integer toInt(S text) {
+        if (text == null) return 0;
         return toInt(text.toString());
     }
 
     public static Integer toInt(String str) {
-        return Integer.parseInt(to(str), 10);
+        if (isEmpty(str)) return 0;
+        return Integer.parseInt(str, 10);
+    }
+
+    public static <S extends CharSequence> Integer toInt(S text, int radix) {
+        if (text == null) return 0;
+        return toInt(text.toString(), radix);
     }
 
     public static Integer toInt(String str, int radix) {
+        if (isEmpty(str)) return 0;
         return Integer.parseInt(str, radix);
     }
 
@@ -344,11 +352,13 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Float toFloat(S text) {
+        if (text == null) return 0.0f;
         return toFloat(text.toString());
     }
 
     public static Float toFloat(String str) {
-        return Float.parseFloat(to(str));
+        if (isEmpty(str)) return 0.0f;
+        return Float.parseFloat(str);
     }
 
     /**
@@ -359,13 +369,15 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Double toDouble(S text) {
+        if (text == null) return 0.0;
         return toDouble(text.toString());
     }
 
     public static Double toDouble(String str) {
-        return Double.parseDouble(to(str));
+        if (isEmpty(str)) return 0.0;
+        return Double.parseDouble(str);
     }
-
+    
     // ------------More------------ //
 
     /**
