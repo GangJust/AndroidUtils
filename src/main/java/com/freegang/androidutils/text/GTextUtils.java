@@ -316,7 +316,7 @@ public class GTextUtils {
         }
         return value;
     }
-    
+
     /**
      * 字符转整型
      *
@@ -341,7 +341,11 @@ public class GTextUtils {
 
     public static Integer toInt(String str, int radix) {
         if (isEmpty(str)) return 0;
-        return Integer.parseInt(str, radix);
+        try {
+            return Integer.parseInt(str, radix);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     /**
@@ -358,7 +362,11 @@ public class GTextUtils {
 
     public static Float toFloat(String str) {
         if (isEmpty(str)) return 0.0f;
-        return Float.parseFloat(str);
+        try {
+            return Float.parseFloat(str);
+        } catch (Exception e) {
+            return 0.0f;
+        }
     }
 
     /**
@@ -375,9 +383,13 @@ public class GTextUtils {
 
     public static Double toDouble(String str) {
         if (isEmpty(str)) return 0.0;
-        return Double.parseDouble(str);
+        try {
+            return Double.parseDouble(str);
+        } catch (Exception e) {
+            return 0.0;
+        }
     }
-    
+
     // ------------More------------ //
 
     /**
