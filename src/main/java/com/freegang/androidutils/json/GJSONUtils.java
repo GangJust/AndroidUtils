@@ -364,16 +364,15 @@ public class GJSONUtils {
      */
     public static JSONObject getUntil(JSONObject jsonObject, String... keys) {
         JSONObject resultJSON = jsonObject;
-
-        for (String key : keys) {
-            if (isNull(jsonObject, key)) return new JSONObject();
-            try {
+        try {
+            for (String key : keys) {
+                if (isNull(resultJSON, key)) return new JSONObject();
                 resultJSON = resultJSON.getJSONObject(key);
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
+        
         return resultJSON;
     }
 
@@ -386,10 +385,9 @@ public class GJSONUtils {
      */
     public static JSONArray getArrayUntil(JSONObject jsonObject, String... keys) {
         JSONObject resultJSON = jsonObject;
-
         try {
             for (int i = 0; i < keys.length - 1; i++) {
-                if (isNull(jsonObject, keys[i])) return new JSONArray();
+                if (isNull(resultJSON, keys[i])) return new JSONArray();
                 resultJSON = resultJSON.getJSONObject(keys[i]);
             }
 
@@ -397,7 +395,7 @@ public class GJSONUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        
         return new JSONArray();
     }
 
