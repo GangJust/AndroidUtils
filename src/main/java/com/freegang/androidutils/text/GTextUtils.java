@@ -23,6 +23,21 @@ public class GTextUtils {
     public static final Random defaultRandom = new Random();
 
     /**
+     * NULL字符串对象判断
+     *
+     * @param text
+     * @param <S>
+     * @return
+     */
+    public static <S extends CharSequence> boolean isNull(S text) {
+        return text == null;
+    }
+
+    public static <S extends CharSequence> boolean isNotNull(S text) {
+        return text != null;
+    }
+
+    /**
      * 空字符串判断
      *
      * @param text
@@ -30,11 +45,11 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> boolean isEmpty(S text) {
-        return text == null || isEmpty(text.toString());
+        return isNull(text) || isEmpty(text.toString());
     }
 
     public static boolean isEmpty(String value) {
-        return value == null || value.trim().isEmpty() || value.trim().equals("null");
+        return isNull(value) || value.trim().isEmpty() || value.trim().equals("null");
     }
 
     /**
@@ -129,7 +144,7 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> boolean contains(S text, String... comps) {
-        if (text == null) return false;
+        if (isNull(text)) return false;
         return contains(text.toString(), comps);
     }
 
@@ -153,7 +168,7 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> boolean anyContains(S text, String... comps) {
-        if (text == null) return false;
+        if (isNull(text)) return false;
         return anyContains(text.toString(), comps);
     }
 
@@ -318,6 +333,31 @@ public class GTextUtils {
     }
 
     /**
+     * 统计某个字符串中目标子串出现的次数
+     *
+     * @param text   字符转
+     * @param target 目标子串
+     * @param <S>
+     * @return 出现次数
+     */
+    public static <S extends CharSequence> int count(S text, String target) {
+        if (isNull(text)) return 0;
+        return count(text.toString(), target);
+    }
+
+    public static int count(String value, String target) {
+        if (isEmpty(value) || isEmpty(target)) return 0;
+        if (!value.contains(target)) return 0;
+        int count = 0;
+        while (true) {
+            int indexOf = value.indexOf(target);
+            if (indexOf == -1) return count;
+            value = value.substring(indexOf + target.length());
+            count++;
+        }
+    }
+
+    /**
      * 字符转整型
      *
      * @param text
@@ -325,7 +365,7 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Integer toInt(S text) {
-        if (text == null) return 0;
+        if (isNull(text)) return 0;
         return toInt(text.toString());
     }
 
@@ -335,7 +375,7 @@ public class GTextUtils {
     }
 
     public static <S extends CharSequence> Integer toInt(S text, int radix) {
-        if (text == null) return 0;
+        if (isNull(text)) return 0;
         return toInt(text.toString(), radix);
     }
 
@@ -356,7 +396,7 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Float toFloat(S text) {
-        if (text == null) return 0.0f;
+        if (isNull(text)) return 0.0f;
         return toFloat(text.toString());
     }
 
@@ -377,7 +417,7 @@ public class GTextUtils {
      * @return
      */
     public static <S extends CharSequence> Double toDouble(S text) {
-        if (text == null) return 0.0;
+        if (isNull(text)) return 0.0;
         return toDouble(text.toString());
     }
 
@@ -425,7 +465,8 @@ public class GTextUtils {
      * @return "000Hello"
      */
     public static String padLeft(String value, int minLength, char pad) {
-        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
+        if (minLength <= 0)
+            throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
         if (value.length() >= minLength) return value;
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < minLength - value.length(); i++) builder.append(pad);
@@ -442,7 +483,8 @@ public class GTextUtils {
      * @return "Hello000"
      */
     public static String padRight(String value, int minLength, char pad) {
-        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
+        if (minLength <= 0)
+            throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
         if (value.length() >= minLength) return value;
         StringBuilder builder = new StringBuilder();
         builder.append(value);
@@ -511,6 +553,7 @@ public class GTextUtils {
     public static String random(String[] strings, Random random) {
         return strings[random.nextInt(strings.length)];
     }
+
 
     /**
      * unicode编码
