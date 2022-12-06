@@ -8,7 +8,10 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 public class GBitmapUtils {
@@ -179,7 +182,6 @@ public class GBitmapUtils {
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            GLogUtils.xException(e.getMessage());
         }
         return false;
     }

@@ -47,6 +47,7 @@ public class GLog {
         Log.println(type, tag, TOP_BORDER);
         for (Object content : contents) {
             Log.println(type, tag, MIDDLE_CORNER + content);
+            Log.println(type, tag, MIDDLE_BORDER);
         }
         Log.println(type, tag, BOTTOM_BORDER);
     }
