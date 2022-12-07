@@ -44,10 +44,32 @@ public class GLog {
     }
 
     private static void log(@TYPE final int type, final String tag, final Object... contents) {
+        if (contents == null) {
+            Log.println(type, tag, TOP_BORDER);
+            Log.println(type, tag, MIDDLE_CORNER + "null");
+            Log.println(type, tag, BOTTOM_BORDER);
+            return;
+        }
+
+        if (contents.length == 0) {
+            Log.println(type, tag, TOP_BORDER);
+            Log.println(type, tag, MIDDLE_CORNER + "[]");
+            Log.println(type, tag, BOTTOM_BORDER);
+            return;
+        }
+
+        if (contents.length == 1) {
+            Log.println(type, tag, TOP_BORDER);
+            Log.println(type, tag, MIDDLE_CORNER + contents[0]);
+            Log.println(type, tag, BOTTOM_BORDER);
+            return;
+        }
+
+        Object last = contents[contents.length - 1];
         Log.println(type, tag, TOP_BORDER);
         for (Object content : contents) {
             Log.println(type, tag, MIDDLE_CORNER + content);
-            Log.println(type, tag, MIDDLE_BORDER);
+            if (last != content) Log.println(type, tag, MIDDLE_BORDER);
         }
         Log.println(type, tag, BOTTOM_BORDER);
     }

@@ -15,10 +15,10 @@ public class GViewNode {
     public ViewGroup parent;
     //当前视图
     public View view;
-    //子节点
-    public List<GViewNode> children;
     //当前树的深度
     public int depth;
+    //子节点
+    public List<GViewNode> children;
 
     //销毁节点树
     public void destroy() {
@@ -57,8 +57,8 @@ public class GViewNode {
         return "ViewNode{" +
                 "parent=" + parent +
                 ", view=" + view +
-                ", children=" + children +
                 ", depth=" + depth +
+                ", children=" + children +
                 '}';
     }
 }

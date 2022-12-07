@@ -1,8 +1,10 @@
 package com.freegang.androidutils.view;
 
+import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 
 import java.lang.annotation.Retention;
@@ -31,6 +33,18 @@ public class GViewUtils {
         ///
     }
 
+    public static void setVisibleAll(ViewGroup viewGroup) {
+        setVisibilityAll(viewGroup, VISIBLE);
+    }
+
+    public static void setGoneAll(ViewGroup viewGroup) {
+        setVisibilityAll(viewGroup, GONE);
+    }
+
+    public static void setInvisibleAll(ViewGroup viewGroup) {
+        setVisibilityAll(viewGroup, INVISIBLE);
+    }
+
     /**
      * 对某个 ViewGroup 下的所有子视图进行 Visibility 设置
      *
@@ -50,18 +64,6 @@ public class GViewUtils {
         }
         // 再设置当前视图的 Visibility
         viewGroup.setVisibility(visibility);
-    }
-
-    public static void setVisibleAll(ViewGroup viewGroup) {
-        setVisibilityAll(viewGroup, VISIBLE);
-    }
-
-    public static void setGoneAll(ViewGroup viewGroup) {
-        setVisibilityAll(viewGroup, GONE);
-    }
-
-    public static void setInvisibleAll(ViewGroup viewGroup) {
-        setVisibilityAll(viewGroup, INVISIBLE);
     }
 
 
@@ -97,32 +99,6 @@ public class GViewUtils {
 
 
     /**
-     * 递归遍历某个 ViewGroup 的 Visibility
-     *
-     * @param viewGroup
-     * @param resultList
-     */
-    private static void _traverseVisibilityAll(ViewGroup viewGroup, List<Integer> resultList) {
-        if (viewGroup.getChildCount() == 0) {
-            resultList.add(viewGroup.getVisibility());
-            return;
-        }
-
-        // 先递归获取所有子 View、ViewGroup 的 Visibility
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View childAt = viewGroup.getChildAt(i);
-            if (childAt instanceof ViewGroup) {
-                _traverseVisibilityAll((ViewGroup) childAt, resultList);
-            } else {
-                resultList.add(childAt.getVisibility());
-            }
-        }
-
-        // 再获取当前 ViewGroup 的 Visibility
-        resultList.add(viewGroup.getVisibility());
-    }
-
-    /**
      * 某个父视图下的所有视图是否可见
      *
      * @param viewGroup
@@ -156,6 +132,32 @@ public class GViewUtils {
         List<Integer> resultList = new ArrayList<>();
         _traverseVisibilityAll(viewGroup, resultList);
         return !(resultList.contains(GONE) || resultList.contains(VISIBLE));  //不包含 GONE 或 VISIBLE
+    }
+
+    /**
+     * 递归遍历某个 ViewGroup 的 Visibility
+     *
+     * @param viewGroup
+     * @param resultList
+     */
+    private static void _traverseVisibilityAll(ViewGroup viewGroup, List<Integer> resultList) {
+        if (viewGroup.getChildCount() == 0) {
+            resultList.add(viewGroup.getVisibility());
+            return;
+        }
+
+        // 先递归获取所有子 View、ViewGroup 的 Visibility
+        for (int i = 0; i < viewGroup.getChildCount(); i++) {
+            View childAt = viewGroup.getChildAt(i);
+            if (childAt instanceof ViewGroup) {
+                _traverseVisibilityAll((ViewGroup) childAt, resultList);
+            } else {
+                resultList.add(childAt.getVisibility());
+            }
+        }
+
+        // 再获取当前 ViewGroup 的 Visibility
+        resultList.add(viewGroup.getVisibility());
     }
 
 
@@ -199,7 +201,7 @@ public class GViewUtils {
 
 
     /**
-     * 获取某个视图下的IdName
+     * 获取某个视图的IdName
      *
      * @param view 需要获取IdName的视图
      * @return 该视图的IdName, 若没有, 返回 `-1`
@@ -208,6 +210,18 @@ public class GViewUtils {
         int id = view.getId();
         if (id == -1) return "-1";
         return view.getContext().getResources().getResourceEntryName(id);
+    }
+
+    /**
+     * 获取某个id对应的idName
+     *
+     * @param context 视图上下文
+     * @param resId   id值, 应该是一个id资源值, 可以是 @drawable、@string、@layout 等一系列Resource
+     * @return 对应的idName
+     */
+    public static String getIdName(Context context, @IdRes int resId) {
+        if (resId == -1) return "-1";
+        return context.getResources().getResourceEntryName(resId);
     }
 
     /**
@@ -220,15 +234,18 @@ public class GViewUtils {
      */
     public static List<View> deepViewGroup(ViewGroup viewGroup) {
         List<View> list = new ArrayList<>();
+        list.add(viewGroup);
+
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = viewGroup.getChildAt(i);
-            list.add(childAt);
             if (childAt instanceof ViewGroup) {
                 list.addAll(deepViewGroup((ViewGroup) childAt));
+            } else {
+                //如果符合目标, 添加
+                list.add(childAt);
             }
         }
-
         return list;
     }
 
@@ -244,16 +261,20 @@ public class GViewUtils {
      */
     public static <T extends View> List<T> findViews(ViewGroup viewGroup, Class<T> targetType) {
         List<T> listViews = new ArrayList<>();
+        //如果符合目标, 添加
+        if (targetType.isInstance(viewGroup)) {
+            listViews.add(targetType.cast(viewGroup));
+        }
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = viewGroup.getChildAt(i);
-            //如果符合目标, 添加
-            if (targetType.isInstance(childAt)) {
-                listViews.add(targetType.cast(childAt));
-            }
-            //递归添加
             if (childAt instanceof ViewGroup) {
                 listViews.addAll(findViews((ViewGroup) childAt, targetType));
+            } else {
+                //如果符合目标, 添加
+                if (targetType.isInstance(childAt)) {
+                    listViews.add(targetType.cast(childAt));
+                }
             }
         }
 
@@ -276,15 +297,23 @@ public class GViewUtils {
         List<T> listViews = new ArrayList<>();
         if (containsDesc == null) return listViews;
 
+        //如果符合目标, 添加
+        CharSequence parentDesc = viewGroup.getContentDescription();
+        if (targetType.isInstance(viewGroup) && parentDesc != null && parentDesc.toString().contains(containsDesc)) {
+            listViews.add(targetType.cast(viewGroup));
+        }
+
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = viewGroup.getChildAt(i);
-            CharSequence desc = childAt.getContentDescription();
-            if (targetType.isInstance(childAt) && desc != null && desc.toString().contains(containsDesc)) {
-                listViews.add(targetType.cast(childAt));
-            }
             if (childAt instanceof ViewGroup) {
                 listViews.addAll(findViewsByDesc((ViewGroup) childAt, targetType, containsDesc));
+            } else {
+                //如果符合目标, 添加
+                CharSequence childDesc = childAt.getContentDescription();
+                if (targetType.isInstance(childAt) && childDesc != null && childDesc.toString().contains(containsDesc)) {
+                    listViews.add(targetType.cast(childAt));
+                }
             }
         }
         return listViews;
@@ -307,16 +336,23 @@ public class GViewUtils {
         List<T> listViews = new ArrayList<>();
         if (idName == null || idName.trim().isEmpty() || idName.equals("-1")) return listViews;
 
+        //如果符合目标, 添加
+        String parentIdName = getIdName(viewGroup);
+        if (targetType.isInstance(viewGroup) && parentIdName.equals(idName)) {
+            listViews.add(targetType.cast(viewGroup));
+        }
+
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = viewGroup.getChildAt(i);
-            String entryName = getIdName(childAt);
-            if (entryName.equals(idName)) {
-                listViews.add(targetType.cast(childAt));
-            }
-            //遍历添加子视图
             if (childAt instanceof ViewGroup) {
                 listViews.addAll(findViewsByIdName((ViewGroup) childAt, targetType, idName));
+            } else {
+                //如果符合目标, 添加
+                String childIdName = getIdName(childAt);
+                if (targetType.isInstance(childAt) && childIdName.equals(idName)) {
+                    listViews.add(targetType.cast(childAt));
+                }
             }
         }
         return listViews;
@@ -326,11 +362,12 @@ public class GViewUtils {
      * 遍历ViewGroup, 精确查找指定类型的的某些子View,
      * <p>
      * 例子：
-     *    List<TextView> textViews = GViewUtils.findViewExact(root, TextView.class, tv -> {
-     *        String text = tv.getText().toString();
-     *        CharSequence desc = tv.getContentDescription();
-     *        return text.contains("张三") && desc == null;
-     *    });
+     * List<TextView> textViews = GViewUtils.findViewExact(root, TextView.class, tv -> {
+     * String text = tv.getText().toString();
+     * CharSequence desc = tv.getContentDescription();
+     * return text.contains("张三") && desc == null;
+     * });
+     *
      * @param viewGroup  父视图
      * @param targetType 目标视图, 可以是View
      * @param exact      自定义逻辑, 该参数是一个函数式接口,
@@ -339,20 +376,24 @@ public class GViewUtils {
      * @param <T>        T extend View
      * @return 精确找到的所有视图
      */
-    public static <T extends View> List<T> findViewExact(ViewGroup viewGroup, Class<T> targetType, FindViewExactFunction<T> exact) {
+    public static <T extends View> List<T> findViewsExact(ViewGroup viewGroup, Class<T> targetType, FindViewExactFunction<T> exact) {
         List<T> listViews = new ArrayList<>();
+
+        // 如果符合目标, 添加
+        if (targetType.isInstance(viewGroup) && exact.logic(targetType.cast(viewGroup))) {
+            listViews.add(targetType.cast(viewGroup));
+        }
+
         int childCount = viewGroup.getChildCount();
         for (int i = 0; i < childCount; i++) {
             View childAt = viewGroup.getChildAt(i);
-            //如果符合目标, 进行下一步判断
-            if (targetType.isInstance(childAt)) {
-                //回调自定义逻辑结果, 如果匹配则添加
-                boolean logic = exact.logic(targetType.cast(childAt));
-                if (logic) listViews.add(targetType.cast(childAt));
-            }
-            //递归查找
             if (childAt instanceof ViewGroup) {
-                listViews.addAll(findViewExact((ViewGroup) childAt, targetType, exact));
+                listViews.addAll(findViewsExact((ViewGroup) childAt, targetType, exact));
+            } else {
+                // 如果符合目标, 添加
+                if (targetType.isInstance(childAt) && exact.logic(targetType.cast(childAt))) {
+                    listViews.add(targetType.cast(childAt));
+                }
             }
         }
         return listViews;
@@ -425,7 +466,7 @@ public class GViewUtils {
     /**
      * 摧毁视图多叉树
      *
-     * @param viewNode 多叉树节点,允许是子节点, 也可以是根节点.
+     * @param viewNode 多叉树节点, 允许是子节点, 也可以是根节点.
      *                 该方法将某个节点下的所有子节点释放销毁
      */
     public static void destroyViewTree(GViewNode viewNode) {
