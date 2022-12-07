@@ -21,7 +21,21 @@ public class GJSONUtils {
      * @return
      */
     public static JSONObject parse(String jsonStr) {
+        return parse(jsonStr, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 解析具有json格式的字符串
+     *
+     * @param jsonStr
+     * @param charset
+     * @return
+     */
+    public static JSONObject parse(String jsonStr, Charset charset) {
+        jsonStr = new String(jsonStr.getBytes(charset), charset);
         JSONObject jsonObject = new JSONObject();
+
+        if (jsonStr.isEmpty()) return jsonObject;
         try {
             jsonObject = new JSONObject(jsonStr);
         } catch (JSONException e) {
@@ -37,7 +51,20 @@ public class GJSONUtils {
      * @return
      */
     public static JSONArray parseArray(String jsonStr) {
+        return parseArray(jsonStr, StandardCharsets.UTF_8);
+    }
+
+    /**
+     * 解析具有jsonArray格式的字符串
+     *
+     * @param jsonStr
+     * @return
+     */
+    public static JSONArray parseArray(String jsonStr, Charset charset) {
+        jsonStr = new String(jsonStr.getBytes(charset), charset);
         JSONArray jsonArray = new JSONArray();
+
+        if (jsonStr.isEmpty()) return jsonArray;
         try {
             jsonArray = new JSONArray(jsonStr);
         } catch (JSONException e) {
@@ -372,7 +399,7 @@ public class GJSONUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        
+
         return resultJSON;
     }
 
@@ -385,6 +412,7 @@ public class GJSONUtils {
      */
     public static JSONArray getArrayUntil(JSONObject jsonObject, String... keys) {
         JSONObject resultJSON = jsonObject;
+
         try {
             for (int i = 0; i < keys.length - 1; i++) {
                 if (isNull(resultJSON, keys[i])) return new JSONArray();
@@ -395,7 +423,7 @@ public class GJSONUtils {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        
+
         return new JSONArray();
     }
 
@@ -445,6 +473,7 @@ public class GJSONUtils {
 
     /**
      * 某个JSONObject是否不是空的
+     *
      * @param jsonObject
      * @return
      */
@@ -454,6 +483,7 @@ public class GJSONUtils {
 
     /**
      * 某个JSONArray是否不是空的
+     *
      * @param jsonArray
      * @return
      */
