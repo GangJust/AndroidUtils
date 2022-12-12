@@ -22,60 +22,49 @@ public class GTextUtils {
     //默认随机数种子
     public static final Random defaultRandom = new Random();
 
-    /**
-     * NULL字符串对象判断
-     *
-     * @param text
-     * @param <S>
-     * @return
-     */
-    public static <S extends CharSequence> boolean isNull(S text) {
-        return text == null;
-    }
-
-    public static <S extends CharSequence> boolean isNotNull(S text) {
-        return text != null;
+    public interface TextOperatorFunction {
+        String operator(String str1, String str2);
     }
 
     /**
      * 空字符串判断
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean isEmpty(S text) {
-        return isNull(text) || isEmpty(text.toString());
+        return text == null || isEmpty(text.toString());
     }
 
-    public static boolean isEmpty(String value) {
-        return isNull(value) || value.trim().isEmpty() || value.trim().equals("null");
+    public static boolean isEmpty(String text) {
+        return text == null || text.trim().isEmpty() || text.trim().equals("null");
     }
 
     /**
      * 空字符串数组判断
      *
-     * @param texts
-     * @param <S>
-     * @return
+     * @param texts 被操作的字符串
+     * @param <S>   extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean isEmpties(S... texts) {
         if (texts.length == 0) return true;
 
-        String[] strings = new String[texts.length];
+        String[] values = new String[texts.length];
         for (int i = 0; i < texts.length; i++) {
-            strings[i] = texts[i].toString();
+            values[i] = texts[i].toString();
         }
 
-        return isEmpties(strings);
+        return isEmpties(values);
     }
 
     public static boolean isEmpties(String... values) {
         if (values.length == 0) return false;
 
         ArrayList<Boolean> booleans = new ArrayList<>(); //Boolean列表, 当出现 false 后, 则表示这并不是一个空的字符数组
-        for (String value : values) {
-            booleans.add(isEmpty(value));
+        for (String text : values) {
+            booleans.add(isEmpty(text));
         }
 
         return !(booleans.contains(false)); //当不包含false, 表示整个数组都是空的
@@ -84,24 +73,24 @@ public class GTextUtils {
     /**
      * 非空字符串判断
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean isNotEmpty(S text) {
         return !isEmpty(text);
     }
 
-    public static boolean isNotEmpty(String value) {
-        return !isEmpty(value);
+    public static boolean isNotEmpty(String text) {
+        return !isEmpty(text);
     }
 
     /**
      * 非空字符串数组判断
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean isNotEmpties(S... text) {
         return !isEmpties(text);
@@ -114,19 +103,19 @@ public class GTextUtils {
     /**
      * 判断某个字符串是否是全空白
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean isSpace(S text) {
         if (isEmpty(text)) return true;
         return isSpace(text.toString());
     }
 
-    public static boolean isSpace(String value) {
-        if (isEmpty(value)) return true;
+    public static boolean isSpace(String text) {
+        if (isEmpty(text)) return true;
 
-        char[] chars = value.toCharArray();
+        char[] chars = text.toCharArray();
         ArrayList<Boolean> booleans = new ArrayList<>();
         for (char c : chars) {
             booleans.add(Character.isWhitespace(c));
@@ -138,22 +127,22 @@ public class GTextUtils {
     /**
      * 字符完全包含, 与给定字符串数组做匹配比较, 如果每项都包含, 则表示完全包含.
      *
-     * @param text
-     * @param comps
-     * @param <S>
-     * @return
+     * @param text  被操作的字符串
+     * @param comps 被比较的字符串数组
+     * @param <S>   extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean contains(S text, String... comps) {
-        if (isNull(text)) return false;
+        if (text == null) return false;
         return contains(text.toString(), comps);
     }
 
-    public static boolean contains(String value, String... comps) {
-        if (value == null || comps == null || comps.length == 0) return false;
+    public static boolean contains(String text, String... comps) {
+        if (text == null || comps == null || comps.length == 0) return false;
 
         ArrayList<Boolean> booleans = new ArrayList<>(); //Boolean列表, 当出现 false 后, 则表示这并不是完全匹配
         for (String comp : comps) {
-            booleans.add(value.contains(comp));
+            booleans.add(text.contains(comp));
         }
 
         return !(booleans.contains(false)); //不包含false, 表示全部匹配
@@ -162,20 +151,20 @@ public class GTextUtils {
     /**
      * 字符任意包含, 与给定字符串数组做匹配比较, 如果其中一项包含, 这表示匹配成功
      *
-     * @param text
-     * @param comps
-     * @param <S>
-     * @return
+     * @param text  被操作的字符串
+     * @param comps 被比较的字符串数组
+     * @param <S>   extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> boolean anyContains(S text, String... comps) {
-        if (isNull(text)) return false;
+        if (text == null) return false;
         return anyContains(text.toString(), comps);
     }
 
-    public static boolean anyContains(String value, String... comps) {
-        if (value == null || comps == null || comps.length == 0) return false;
+    public static boolean anyContains(String text, String... comps) {
+        if (text == null || comps == null || comps.length == 0) return false;
         for (String comp : comps) {
-            if (value.contains(comp)) return true;
+            if (text.contains(comp)) return true;
         }
         return false;
     }
@@ -183,20 +172,20 @@ public class GTextUtils {
     /**
      * 字符比较, 与给定字符串数组做比较, 如果有任意一项匹配, 都表示匹配成功.
      *
-     * @param value
-     * @param equals
-     * @param <S>
-     * @return
+     * @param text  被操作的字符串
+     * @param equals 被比较的字符串
+     * @param <S>    extends CharSequence
+     * @return String
      */
-    public static <S extends CharSequence> boolean anyEquals(S value, String... equals) {
-        if (value == null) return false;
-        return anyEquals(value.toString(), equals);
+    public static <S extends CharSequence> boolean anyEquals(S text, String... equals) {
+        if (text == null) return false;
+        return anyEquals(text.toString(), equals);
     }
 
-    public static boolean anyEquals(String value, String... equals) {
-        if (value == null || equals == null || equals.length == 0) return false;
+    public static boolean anyEquals(String text, String... equals) {
+        if (text == null || equals == null || equals.length == 0) return false;
         for (String e : equals) {
-            if (value.equals(e)) return true;
+            if (text.equals(e)) return true;
         }
         return false;
     }
@@ -204,45 +193,45 @@ public class GTextUtils {
     /**
      * 去掉字符串前后的空白字符
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> String to(S text) {
         if (isEmpty(text)) return "";
         return to(text.toString());
     }
 
-    public static String to(String value) {
-        if (isEmpty(value)) return "";
-        return value.trim();
+    public static String to(String text) {
+        if (isEmpty(text)) return "";
+        return text.trim();
     }
 
     /**
      * 去掉字符串中的所有空白字符
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> String toAll(S text) {
         if (isEmpty(text)) return "";
         return toAll(text.toString());
     }
 
-    public static String toAll(String value) {
-        if (isEmpty(value)) return "";
-        return value.trim().replaceAll("\\s", "");
+    public static String toAll(String text) {
+        if (isEmpty(text)) return "";
+        return text.trim().replaceAll("\\s", "");
     }
 
 
     /**
      * 如果某个字符为空, 则返回给定默认字符串
      *
-     * @param maybeNullValue
-     * @param defaultValue
-     * @param <S>
-     * @return
+     * @param maybeNullValue 被操作的字符串
+     * @param defaultValue   默认值
+     * @param <S>            extends CharSequence
+     * @return String
      */
     public static <S extends CharSequence> String get(S maybeNullValue, String defaultValue) {
         if (maybeNullValue == null) return defaultValue;
@@ -257,9 +246,9 @@ public class GTextUtils {
     /**
      * 如果某个对象为空, 则返回给定的默认字符串, 否则调用它的toString()
      *
-     * @param maybeNull
-     * @param defaultValue
-     * @return
+     * @param maybeNull    被操作的字符串
+     * @param defaultValue 默认值
+     * @return String
      */
     public static String get(Object maybeNull, String defaultValue) {
         if (maybeNull == null) return defaultValue;
@@ -269,103 +258,78 @@ public class GTextUtils {
     /**
      * 截取某字符串前面的所有内容, 成功返回操作后的值, 失败返回它本身
      *
-     * @param value
-     * @param target
-     * @param <S>
-     * @return
+     * @param text  被操作的字符串
+     * @param target 被匹配的字符串
+     * @param <S>    extends CharSequence
+     * @return target之前的所有内容
      */
-    public static <S extends CharSequence> String front(S value, String target) {
-        if (value == null) return "";
-        return front(value.toString(), target);
+    public static <S extends CharSequence> String front(S text, String target) {
+        if (text == null) return "";
+        return front(text.toString(), target);
     }
 
-    public static String front(String value, String target) {
-        if (isEmpty(value) || isEmpty(target)) return "";
-        if (!value.contains(target)) return value;
-        return value.substring(0, value.indexOf(target));
+    public static String front(String text, String target) {
+        if (isEmpty(text) || isEmpty(target)) return "";
+        if (!text.contains(target)) return text;
+        return text.substring(0, text.indexOf(target));
     }
 
     /**
-     * 截取某字符串后面的所有内容, 成功返回操作后的值, 失败返回它本身
+     * 截取字符串样例中的某个出现的字符串后面的所有内容, 成功返回操作后的值, 失败返回它本身
      *
-     * @param value
-     * @param target
-     * @param <S>
-     * @return
+     * @param text  被操作的字符串
+     * @param target 被匹配的字符串
+     * @param <S>    extends CharSequence
+     * @return target之后的所有内容
      */
-    public static <S extends CharSequence> String after(S value, String target) {
-        if (value == null) return "";
-        return after(value.toString(), target);
+    public static <S extends CharSequence> String after(S text, String target) {
+        if (text == null) return "";
+        return after(text.toString(), target);
     }
 
-    public static String after(String value, String target) {
-        if (isEmpty(value) || isEmpty(target)) return "";
-        if (!value.contains(target)) return value;
-        return value.substring(value.indexOf(target) + target.length());
+    public static String after(String text, String target) {
+        if (isEmpty(text) || isEmpty(target)) return "";
+        if (!text.contains(target)) return text;
+        return text.substring(text.indexOf(target) + target.length());
     }
 
     /**
      * 截取某字符串中间的内容, 成功返回操作后的值, 失败返回它本身
      *
-     * @param value
-     * @param start
-     * @param end
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param start 开始的字符串
+     * @param end   结束的字符串
+     * @param <S>   extends CharSequence
+     * @return String
      */
-    public static <S extends CharSequence> String middle(S value, String start, String end) {
-        if (value == null) return "";
-        return middle(value.toString(), start, end);
+    public static <S extends CharSequence> String middle(S text, String start, String end) {
+        if (text == null) return "";
+        return middle(text.toString(), start, end);
     }
 
-    public static String middle(String value, String start, String end) {
-        if (isEmpty(value) || isEmpty(start) || isEmpty(end)) return value;
+    public static String middle(String text, String start, String end) {
+        if (isEmpty(text) || isEmpty(start) || isEmpty(end)) return text;
 
         //如果前置包含, 则截取后段
-        if (value.contains(start)) {
-            value = value.substring(value.indexOf(start) + start.length());
+        if (text.contains(start)) {
+            text = text.substring(text.indexOf(start) + start.length());
         }
         //如果后置包含, 则截取前段
-        if (value.contains(end)) {
-            value = value.substring(0, value.indexOf(end));
+        if (text.contains(end)) {
+            text = text.substring(0, text.indexOf(end));
         }
-        return value;
-    }
-
-    /**
-     * 统计某个字符串中目标子串出现的次数
-     *
-     * @param text   字符转
-     * @param target 目标子串
-     * @param <S>
-     * @return 出现次数
-     */
-    public static <S extends CharSequence> int count(S text, String target) {
-        if (isNull(text)) return 0;
-        return count(text.toString(), target);
-    }
-
-    public static int count(String value, String target) {
-        if (isEmpty(value) || isEmpty(target)) return 0;
-        if (!value.contains(target)) return 0;
-        int count = 0;
-        while (true) {
-            int indexOf = value.indexOf(target);
-            if (indexOf == -1) return count;
-            value = value.substring(indexOf + target.length());
-            count++;
-        }
+        return text;
     }
 
     /**
      * 字符转整型
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return Integer
      */
     public static <S extends CharSequence> Integer toInt(S text) {
-        if (isNull(text)) return 0;
+        if (text == null) return 0;
         return toInt(text.toString());
     }
 
@@ -375,79 +339,89 @@ public class GTextUtils {
     }
 
     public static <S extends CharSequence> Integer toInt(S text, int radix) {
-        if (isNull(text)) return 0;
+        if (text == null) return 0;
         return toInt(text.toString(), radix);
     }
 
     public static Integer toInt(String str, int radix) {
         if (isEmpty(str)) return 0;
-        try {
-            return Integer.parseInt(str, radix);
-        } catch (Exception e) {
-            return 0;
-        }
+        return Integer.parseInt(str, radix);
     }
 
     /**
      * 字符转单精度小数
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return Float
      */
     public static <S extends CharSequence> Float toFloat(S text) {
-        if (isNull(text)) return 0.0f;
+        if (text == null) return 0.0f;
         return toFloat(text.toString());
     }
 
     public static Float toFloat(String str) {
         if (isEmpty(str)) return 0.0f;
-        try {
-            return Float.parseFloat(str);
-        } catch (Exception e) {
-            return 0.0f;
-        }
+        return Float.parseFloat(str);
     }
 
     /**
      * 字符双精度小数
      *
-     * @param text
-     * @param <S>
-     * @return
+     * @param text 被操作的字符串
+     * @param <S>  extends CharSequence
+     * @return Double
      */
     public static <S extends CharSequence> Double toDouble(S text) {
-        if (isNull(text)) return 0.0;
+        if (text == null) return 0.0;
         return toDouble(text.toString());
     }
 
     public static Double toDouble(String str) {
         if (isEmpty(str)) return 0.0;
-        try {
-            return Double.parseDouble(str);
-        } catch (Exception e) {
-            return 0.0;
-        }
+        return Double.parseDouble(str);
     }
 
     // ------------More------------ //
 
     /**
+     * 对字符串数组中的前、后项进行遍历输出, 可以通过 operator 对其做相应运算
+     * <p>
+     * 例1：取出字符串数组中最大长度字符串
+     * GTextUtils.reduce(new String[]{"123", "12"}, (str1, str2) -> str1.length() > str2.length() ? str1 : str2)
+     * 例2: 将字符串数组合并为一个新的字符串, 类似于: GTextUtils#splicing
+     * GTextUtils.reduce(new String[]{"123", "12"}, (str1, str2) -> str1.concat(str2));
+     *
+     * @param values   被操作的字符数组
+     * @param operator 运算表达式
+     * @return String
+     */
+    public static String reduce(String[] values, TextOperatorFunction operator) {
+        if (values == null || values.length == 0) return "";
+
+        String result = values[0];
+        for (int i = 0; i < values.length - 1; i++) {
+            result = operator.operator(values[i], values[i + 1]);
+        }
+        return result;
+    }
+
+    /**
      * 将一个字符串数组拼接成一个字符串, 用指定文本分割, 若操作失败, 则返回 "" 字符串
      *
-     * @param strings ["a", "b", "s"]
+     * @param values ["a", "b", "s"]
      * @param s       `!`
      * @return "a!b!s"
      */
-    public static String splicing(String[] strings, String s) {
-        return splicing(new ArrayList<>(Arrays.asList(strings)), s);
+    public static String splicing(String[] values, String s) {
+        return splicing(new ArrayList<>(Arrays.asList(values)), s);
     }
 
-    public static String splicing(Collection<String> strings, String s) {
-        if (strings == null || strings.isEmpty()) return "";
+    public static String splicing(Collection<String> values, String s) {
+        if (values == null || values.isEmpty()) return "";
 
         StringBuilder builder = new StringBuilder();
-        for (String string : strings) {
+        for (String string : values) {
             builder.append(string).append(s);
         }
         int start = builder.length() - s.length();
@@ -459,36 +433,34 @@ public class GTextUtils {
     /**
      * 某个字符串不足最小指定长度, 左填充指定字符
      *
-     * @param value     "Hello"
+     * @param text     "Hello"
      * @param minLength 8
      * @param pad       '0'
      * @return "000Hello"
      */
-    public static String padLeft(String value, int minLength, char pad) {
-        if (minLength <= 0)
-            throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
-        if (value.length() >= minLength) return value;
+    public static String padLeft(String text, int minLength, char pad) {
+        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
+        if (text.length() >= minLength) return text;
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < minLength - value.length(); i++) builder.append(pad);
-        builder.append(value);
+        for (int i = 0; i < minLength - text.length(); i++) builder.append(pad);
+        builder.append(text);
         return builder.toString();
     }
 
     /**
      * 某个字符串不足最小指定长度, 右填充指定字符
      *
-     * @param value     "Hello"
+     * @param text     "Hello"
      * @param minLength 8
      * @param pad       '0'
      * @return "Hello000"
      */
-    public static String padRight(String value, int minLength, char pad) {
-        if (minLength <= 0)
-            throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
-        if (value.length() >= minLength) return value;
+    public static String padRight(String text, int minLength, char pad) {
+        if (minLength <= 0) throw new IllegalArgumentException("need: `minLength > 0`, current: minLength = " + minLength);
+        if (text.length() >= minLength) return text;
         StringBuilder builder = new StringBuilder();
-        builder.append(value);
-        for (int i = 0; i < minLength - value.length(); i++) builder.append(pad);
+        builder.append(text);
+        for (int i = 0; i < minLength - text.length(); i++) builder.append(pad);
         return builder.toString();
     }
 
@@ -543,17 +515,16 @@ public class GTextUtils {
     /**
      * 字符串数组随机获取
      *
-     * @param strings "abcd"
+     * @param values "abcd"
      * @return 随机从 abcd 四个字母中返回随机的字母
      */
-    public static String random(String[] strings) {
-        return random(strings, defaultRandom);
+    public static String random(String[] values) {
+        return random(values, defaultRandom);
     }
 
-    public static String random(String[] strings, Random random) {
-        return strings[random.nextInt(strings.length)];
+    public static String random(String[] values, Random random) {
+        return values[random.nextInt(values.length)];
     }
-
 
     /**
      * unicode编码
