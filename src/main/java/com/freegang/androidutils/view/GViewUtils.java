@@ -12,9 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -31,6 +28,37 @@ public class GViewUtils {
 
     private GViewUtils() {
         ///
+    }
+
+    /**
+     * 显示某个视图
+     *
+     * @param view 被操作的视图
+     */
+    public static void show(View view) {
+        view.setVisibility(VISIBLE);
+    }
+
+    /**
+     * 隐藏某个视图
+     *
+     * @param view 被操作的视图
+     */
+    public static void hide(View view) {
+        view.setVisibility(GONE);
+    }
+
+    /**
+     * 切换某个视图的可见状态
+     *
+     * @param view 被操作的视图
+     */
+    public static void toggle(View view) {
+        if (view.getVisibility() == VISIBLE) {
+            view.setVisibility(GONE);
+        } else {
+            view.setVisibility(VISIBLE);
+        }
     }
 
     public static void setVisibleAll(ViewGroup viewGroup) {
