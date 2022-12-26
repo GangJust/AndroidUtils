@@ -71,21 +71,25 @@ public class GOkHttpUtils {
     }
 
     private GOkHttpUtils() {
-        OkHttpClient.Builder ClientBuilder = new OkHttpClient.Builder();
-        ClientBuilder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);//读取超时
-        ClientBuilder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);//连接超时
-        ClientBuilder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);//写入超时
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        //读取超时
+        clientBuilder.readTimeout(READ_TIMEOUT, TimeUnit.SECONDS);
+        //连接超时
+        clientBuilder.connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS);
+        //写入超时
+        clientBuilder.writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
         //支持HTTPS请求，跳过证书验证
-        ClientBuilder.sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts());
-        ClientBuilder.hostnameVerifier((hostname, session) -> true);
-        mOkHttpClient = ClientBuilder.build();
+        clientBuilder.sslSocketFactory(createSSLSocketFactory(), new TrustAllCerts());
+        clientBuilder.hostnameVerifier((hostname, session) -> true);
+        
+        mOkHttpClient = clientBuilder.build();
     }
 
     /**
      * get请求，同步方式，获取网络数据
      *
-     * @param url
-     * @return
+     * @param url url
+     * @return return
      */
     public Response getData(String url) {
         return execute(url, "GET", null);
@@ -94,21 +98,31 @@ public class GOkHttpUtils {
     /**
      * post请求，同步方式，提交数据获取响应
      *
-     * @param url
-     * @param bodyParams
-     * @return
+     * @param url        url
+     * @param bodyParams Request Body
+     * @return return
      */
     public Response postData(String url, Map<String, String> bodyParams) {
-        return execute(url, "POST", buildFormBody(bodyParams));
+        return postData(url, buildFormBody(bodyParams));
+    }
+
+    /**
+     * post请求，同步方式，提交数据获取响应
+     *
+     * @param url  url
+     * @param body body
+     * @return return
+     */
+    public Response postData(String url, RequestBody body) {
+        return execute(url, "POST", body);
     }
 
     /**
      * post请求，同步方式，提交JSON数据获取响应
      *
-     * @param url
-     * @param json
-     * @return
-     * @throws IOException
+     * @param url  url
+     * @param json Request Json
+     * @return return
      */
     public Response postJson(String url, String json) {
         return execute(url, "POST", buildJsonBody(json));
@@ -121,11 +135,11 @@ public class GOkHttpUtils {
     /**
      * 同步请求方式, 直接请求网络, 需要手动创建子线程执行.
      *
-     * @param url
-     * @param method
-     * @param headers
-     * @param requestBody
-     * @return
+     * @param url         url
+     * @param method      Method
+     * @param headers     Request Headers
+     * @param requestBody Request Body
+     * @return return
      */
     public Response execute(String url, String method, Headers headers, RequestBody requestBody) {
         Request request = new Request.Builder()
@@ -144,13 +158,13 @@ public class GOkHttpUtils {
         return null;
     }
 
+    ////
 
     /**
      * get请求，异步方式，获取响应
      *
-     * @param url
-     * @param respCall
-     * @return
+     * @param url      url
+     * @param respCall Response
      */
     public void getDataAsync(String url, final RespCall respCall) {
         executeAsync(url, "GET", null, respCall);
@@ -159,21 +173,30 @@ public class GOkHttpUtils {
     /**
      * post请求，异步方式，提交数据获取响应
      *
-     * @param url
-     * @param bodyParams
-     * @param respCall
+     * @param url        url
+     * @param bodyParams Request Body
+     * @param respCall   Response
      */
     public void postDataAsync(String url, Map<String, String> bodyParams, final RespCall respCall) {
-        executeAsync(url, "POST", buildFormBody(bodyParams), respCall);
+        postDataAsync(url, buildFormBody(bodyParams), respCall);
+    }
+
+    /**
+     * post请求，异步方式，提交数据获取响应
+     *
+     * @param url         url
+     * @param requestBody Request Body
+     * @param respCall    Response
+     */
+    public void postDataAsync(String url, RequestBody requestBody, final RespCall respCall) {
+        executeAsync(url, "POST", requestBody, respCall);
     }
 
     /**
      * post请求，异步方式，提交JSON格式数据获取响应
      *
-     * @param url
-     * @param json
-     * @return
-     * @throws IOException
+     * @param url  url
+     * @param json Request Json
      */
     public void postJsonAsync(String url, String json, RespCall respCall) {
         executeAsync(url, "POST", buildJsonBody(json), respCall);
@@ -182,10 +205,10 @@ public class GOkHttpUtils {
     /**
      * 异步请求, 通过 respCall进行请求回调, 非UI线程
      *
-     * @param url
-     * @param method
-     * @param requestBody
-     * @param respCall
+     * @param url         url
+     * @param method      Method
+     * @param requestBody Request Body
+     * @param respCall    Response
      */
     public void executeAsync(String url, String method, RequestBody requestBody, final RespCall respCall) {
         executeAsync(url, method, Headers.of(), requestBody, respCall);
@@ -194,11 +217,11 @@ public class GOkHttpUtils {
     /**
      * 异步请求方式, 通过 respCall进行请求回调, 非UI线程
      *
-     * @param url
-     * @param method
-     * @param headers
-     * @param requestBody
-     * @param respCall
+     * @param url         url
+     * @param method      Method
+     * @param headers     Request Headers
+     * @param requestBody Request Body
+     * @param respCall    Response
      */
     public void executeAsync(String url, String method, Headers headers, RequestBody requestBody, final RespCall respCall) {
         //构造Request
@@ -223,12 +246,13 @@ public class GOkHttpUtils {
         });
     }
 
+    ////
 
     /**
      * get请求, 异步方式, 获取响应体内容
      *
-     * @param url
-     * @param respCallBody
+     * @param url          url
+     * @param respCallBody Response
      */
     public void getDataAsync(String url, RespCallBody respCallBody) {
         executeAsync(url, "GET", null, respCallBody);
@@ -237,21 +261,30 @@ public class GOkHttpUtils {
     /**
      * post请求, 异步方式, 获取响应体内容
      *
-     * @param url
-     * @param bodyParams
-     * @param respCallBody
+     * @param url          url
+     * @param bodyParams   Request Body
+     * @param respCallBody Response
      */
     public void postDataAsync(String url, Map<String, String> bodyParams, final RespCallBody respCallBody) {
-        executeAsync(url, "POST", buildFormBody(bodyParams), respCallBody);
+        postDataAsync(url, buildFormBody(bodyParams), respCallBody);
+    }
+
+    /**
+     * post请求, 异步方式, 获取响应体内容
+     *
+     * @param url          url
+     * @param requestBody  Request Body
+     * @param respCallBody Response
+     */
+    public void postDataAsync(String url, RequestBody requestBody, final RespCallBody respCallBody) {
+        executeAsync(url, "POST", requestBody, respCallBody);
     }
 
     /**
      * post请求，异步方式，提交JSON格式数据获取响应
      *
-     * @param url
-     * @param json
-     * @return
-     * @throws IOException
+     * @param url  url
+     * @param json Request Json
      */
     public void postJsonAsync(String url, String json, RespCallBody respCallBody) {
         executeAsync(url, "POST", buildJsonBody(json), respCallBody);
@@ -260,10 +293,10 @@ public class GOkHttpUtils {
     /**
      * 异步请求
      *
-     * @param url
-     * @param method
-     * @param requestBody
-     * @param respCallBody
+     * @param url          url
+     * @param method       Method
+     * @param requestBody  Request Body
+     * @param respCallBody Response
      */
     public void executeAsync(String url, String method, RequestBody requestBody, final RespCallBody respCallBody) {
         executeAsync(url, method, Headers.of(), requestBody, respCallBody);
@@ -272,11 +305,11 @@ public class GOkHttpUtils {
     /**
      * 异步请求方式, 通过 respCall进行请求回调, 非UI线程
      *
-     * @param url
-     * @param method
-     * @param headers
-     * @param requestBody
-     * @param respCallBody
+     * @param url          Request Url
+     * @param method       Request Method
+     * @param headers      Request Headers
+     * @param requestBody  Request Body
+     * @param respCallBody Response
      */
     public void executeAsync(String url, String method, Headers headers, RequestBody requestBody, final RespCallBody respCallBody) {
         //构造Request
@@ -307,31 +340,32 @@ public class GOkHttpUtils {
         });
     }
 
+    //// 待测试
 
     /**
      * 文件上传
      *
-     * @param url
-     * @param method
-     * @param types
-     * @param files
-     * @param listener
+     * @param url      url
+     * @param method   Method
+     * @param types    File Types
+     * @param files    Files
+     * @param listener Listener
      */
-    public void uploadFile(String url, String method, MediaType[] types, File[] files, UploadProgressListener listener) {
-        uploadFile(url, method, types, files, null, listener);
+    public void uploadFiles(String url, String method, MediaType[] types, File[] files, UploadProgressListener listener) {
+        uploadFiles(url, method, types, files, null, listener);
     }
 
     /**
      * 文件上传
      *
-     * @param url
-     * @param method
-     * @param types
-     * @param files
-     * @param bodyParams
-     * @param listener
+     * @param url        url
+     * @param method     Method
+     * @param types      File Types
+     * @param files      Files
+     * @param bodyParams Request Body
+     * @param listener   Listener
      */
-    public void uploadFile(String url, String method, MediaType[] types, File[] files, Map<String, String> bodyParams, UploadProgressListener listener) {
+    public void uploadFiles(String url, String method, MediaType[] types, File[] files, Map<String, String> bodyParams, UploadProgressListener listener) {
         //构建RequestBody
         RequestBody requestBody = buildUploadFileBody(types, files, bodyParams);
         //构建Request
@@ -355,14 +389,15 @@ public class GOkHttpUtils {
         }
     }
 
+    ////
 
     /**
      * Form表单格式, 请求参数, 构造RequestBody
      *
-     * @param bodyParams 参数组合
-     * @return
+     * @param bodyParams Request Body 参数组合
+     * @return return
      */
-    private RequestBody buildFormBody(Map<String, String> bodyParams) {
+    public RequestBody buildFormBody(Map<String, String> bodyParams) {
         RequestBody body = null;
         FormBody.Builder formEncodingBuilder = new FormBody.Builder();
         if (bodyParams != null) {
@@ -381,10 +416,10 @@ public class GOkHttpUtils {
     /**
      * JSON文本格式, 请求参数, 构造RequestBody
      *
-     * @param json 参数json
-     * @return
+     * @param json Request Json
+     * @return return
      */
-    private RequestBody buildJsonBody(String json) {
+    public RequestBody buildJsonBody(String json) {
         return RequestBody.create(MEDIA_TYPE_JSON, json);
         //return RequestBody.create(json, MEDIA_TYPE_JSON); //okhttp3推荐这样写, 如有需要可切换上面一行
     }
@@ -392,11 +427,11 @@ public class GOkHttpUtils {
     /**
      * 文件上传格式, 请求参数, 构造RequestBody
      *
-     * @param types
-     * @param files
-     * @return
+     * @param types File Types
+     * @param files Files
+     * @return return
      */
-    private RequestBody buildUploadFileBody(MediaType[] types, File[] files, Map<String, String> bodyParams) {
+    public RequestBody buildUploadFileBody(MediaType[] types, File[] files, Map<String, String> bodyParams) {
         //构建上传表单
         MultipartBody.Builder builder = new MultipartBody
                 .Builder()
@@ -428,11 +463,12 @@ public class GOkHttpUtils {
         return builder.build();
     }
 
+    ////
 
     /**
      * 生成安全套接字工厂，用于https请求的证书跳过
      *
-     * @return
+     * @return return
      */
     private SSLSocketFactory createSSLSocketFactory() {
         SSLSocketFactory ssfFactory = null;
@@ -463,6 +499,8 @@ public class GOkHttpUtils {
             return new X509Certificate[0];
         }
     }
+
+    ////
 
     /**
      * 响应回调接口
