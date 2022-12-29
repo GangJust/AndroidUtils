@@ -1,24 +1,22 @@
-package com.freegang.androidutils.log;
+package com.freegang.androidutils.log
 
 import android.app.Application
-import android.text.format.DateFormat
 import android.util.Log
+import com.freegang.freely.utils.io.forceDelete
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.logging.SimpleFormatter
 
 /// 改由Kotlin实现
-object GLogCat {
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
-
+class GLogCat {
     private var tag: String = "GLogCat"
-    private var application: Application? = null
+    private var maxBorderSize = 64
     private var showTitle = false
-    private var showMiddleBorder = false
-    private var saveToStorage = false
+    private var showDivider = false
+    private var saveToLocal = false
+    private var silence = false
 
     // border
     private var topBorderStart: Char = '╭'
@@ -37,19 +35,25 @@ object GLogCat {
     private var filledCircularChar: Char = '●'
     private var outlineCircularChar: Char = '○'
 
-    fun init(block: GLogCat.() -> Unit) {
-        block.invoke(this)
-    }
-
+    /**
+     * logcat tag
+     */
     fun setTag(tag: String) {
         this.tag = tag
+    }
+
+    /**
+     * max border size
+     */
+    fun setMaxBorderSize(size: Int) {
+        this.maxBorderSize = size
     }
 
     /**
      * open logcat title
      * will print 'tag' and 'level`
      */
-    fun openTitle() {
+    fun showTitle() {
         this.showTitle = true
     }
 
@@ -57,8 +61,8 @@ object GLogCat {
      * open logcat middle border
      * it may be called `divider line`
      */
-    fun openMiddleBorder() {
-        this.showMiddleBorder = true
+    fun showDivider() {
+        this.showDivider = true
     }
 
     /**
@@ -68,80 +72,39 @@ object GLogCat {
      *
      * @param
      */
-    fun openStorage(application: Application) {
-        this.application = application
-        this.saveToStorage = true
-    }
-
-    /**
-     * VERBOSE = 2
-     */
-    fun v(msg: String) {
-        println(Log.VERBOSE, tag, msg)
-    }
-
-    fun v(vararg msg: String) {
-        println(Log.VERBOSE, tag, *msg)
-    }
-
-    /**
-     * DEBUG = 3
-     */
-    fun d(msg: String) {
-        println(Log.DEBUG, tag, msg)
-    }
-
-    fun d(vararg msg: String) {
-        println(Log.DEBUG, tag, *msg)
-    }
-
-    /**
-     * INFO = 4
-     */
-    fun i(msg: String) {
-        println(Log.INFO, tag, msg)
-    }
-
-    fun i(vararg msg: String) {
-        println(Log.INFO, tag, *msg)
-    }
-
-    /**
-     * WARN = 5
-     */
-    fun w(msg: String) {
-        println(Log.WARN, tag, msg)
-    }
-
-    fun w(vararg msg: String) {
-        println(Log.WARN, tag, *msg)
-    }
-
-    /**
-     * ERROR = 6
-     */
-    fun e(msg: String) {
-        println(Log.ERROR, tag, msg)
-    }
-
-    fun e(vararg msg: String) {
-        println(Log.ERROR, tag, *msg)
+    fun saveToLocal() {
+        this.saveToLocal = true
     }
 
     /**
      * print logcat
      */
     private fun println(priority: Int, tag: String, vararg msg: String) {
+        /// silence mode
+        if (silence) return
+
         //max length string
         val maxReduce = msg.reduce { acc, s -> if (acc.length > s.length) acc else s }
-        //border
-        val border = maxReduce.map { borderSolid }.joinToString("")
-        val middleBorder = maxReduce.map { borderDotted }.joinToString("")
+
+        // border builder
+        val border = if (maxReduce.length >= maxBorderSize) {
+            maxBorderSize.forCalc(0, "") { "$it$borderDotted" }
+        } else {
+            maxReduce.map { borderSolid }.joinToString("")
+        }
+        val divider = if (maxReduce.length >= 64) {
+            maxBorderSize.forCalc(0, "") { "$it$borderDotted" }
+        } else {
+            maxReduce.map { borderDotted }.joinToString("")
+        }
+
+
+        //final border
         val topBorder = "$topBorderStart$border"
         val contentLeftBorder = "$borderStart$borderSolid"
         val bottomBorder = "$bottomBorderStart$border"
 
-        ///打印日志
+        /// print Log
         //top border
         Log.println(priority, tag, topBorder)
         //title
@@ -154,8 +117,8 @@ object GLogCat {
             writeToStorage(priority, tag, it)
             Log.println(priority, tag, "$contentLeftBorder$it")
             //middle border
-            if (msg[msg.lastIndex] != it && showMiddleBorder) {
-                Log.println(priority, tag, "$contentLeftBorder$middleBorder")
+            if (msg[msg.lastIndex] != it && showDivider) {
+                Log.println(priority, tag, "$contentLeftBorder$divider")
             }
         }
         //bottom border
@@ -166,15 +129,14 @@ object GLogCat {
      * print logcat to file (write)
      */
     private fun writeToStorage(priority: Int, tag: String, msg: String) {
-        if (!saveToStorage) return
+        if (!saveToLocal) return
         val application = application ?: return
 
-        val appName = application.resources.getString(application.applicationInfo.labelRes)
-        val logFile =
-            File(getLogcatStoragePath(), "${appName}_".plus(dateFormat.format(Calendar.getInstance().time)).plus(".log"))
-        if (!logFile.exists()) logFile.createNewFile()
-
         try {
+            val appName = application.resources.getString(application.applicationInfo.labelRes)
+            val logFile = File(getLocalLogPath(), "${appName}_".plus(dateFormat.format(Calendar.getInstance().time)).plus(".log"))
+            if (!logFile.exists()) logFile.createNewFile()
+
             FileWriter(logFile, true).use {
                 it.append("[")
                 it.append("tag=${tag}, ")
@@ -186,7 +148,7 @@ object GLogCat {
                 it.append("\n")
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(tag, "GLogCat Error: ${e.message}")
         }
     }
 
@@ -207,27 +169,112 @@ object GLogCat {
     }
 
     /**
-     * logcat dir
+     * static
      */
-    private fun getLogcatStoragePath(): File? {
-        return application?.getExternalFilesDir("logs")
-    }
+    companion object {
+        private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA)
+        private val instance = GLogCat()
+        private var application: Application? = null
 
-    /**
-     * read the logcat in the file
-     * if the log file exists
-     *
-     * @param date need date
-     */
-    fun getStorageLogContent(date: Date): String {
-        val application = application ?: return "read fail, application is null."
+        /**
+         * init
+         */
+        fun init(application: Application, block: GLogCat.() -> Unit) {
+            this.application = application
+            block.invoke(instance)
+        }
 
-        val appName = application.resources.getString(application.applicationInfo.labelRes)
-        val logFile = File(getLogcatStoragePath(), "${appName}_".plus(dateFormat.format(date)).plus(".log"))
-        if (!logFile.exists()) return "read fail, file `${logFile.name}` non-existent."
+        /**
+         * VERBOSE = 2
+         */
+        fun v(msg: String) {
+            instance.println(Log.VERBOSE, instance.tag, msg)
+        }
 
-        val reader = FileReader(logFile)
-        return reader.readText()
+        fun v(vararg msg: String) {
+            instance.println(Log.VERBOSE, instance.tag, *msg)
+        }
+
+        /**
+         * DEBUG = 3
+         */
+        fun d(msg: String) {
+            instance.println(Log.DEBUG, instance.tag, msg)
+        }
+
+        fun d(vararg msg: String) {
+            instance.println(Log.DEBUG, instance.tag, *msg)
+        }
+
+        /**
+         * INFO = 4
+         */
+        fun i(msg: String) {
+            instance.println(Log.INFO, instance.tag, msg)
+        }
+
+        fun i(vararg msg: String) {
+            instance.println(Log.INFO, instance.tag, *msg)
+        }
+
+        /**
+         * WARN = 5
+         */
+        fun w(msg: String) {
+            instance.println(Log.WARN, instance.tag, msg)
+        }
+
+        fun w(vararg msg: String) {
+            instance.println(Log.WARN, instance.tag, *msg)
+        }
+
+        /**
+         * ERROR = 6
+         */
+        fun e(msg: String) {
+            instance.println(Log.ERROR, instance.tag, msg)
+        }
+
+        fun e(vararg msg: String) {
+            instance.println(Log.ERROR, instance.tag, *msg)
+        }
+
+        /**
+         * clear local logcat files
+         */
+        fun clearLocalLog() {
+            getLocalLogPath()?.forceDelete()
+        }
+
+        /**
+         * read the logcat in the file
+         * if the log file exists
+         *
+         * @param date need date
+         */
+        fun readLocalLog(date: Date): String {
+            val application = application ?: return "read fail, application is null."
+
+            val appName = application.resources.getString(application.applicationInfo.labelRes)
+            val logFile = File(getLocalLogPath(), "${appName}_".plus(dateFormat.format(date)).plus(".log"))
+            if (!logFile.exists()) return "read fail, file `${logFile.name}` non-existent."
+
+            val reader = FileReader(logFile)
+            return reader.readText()
+        }
+
+        /**
+         * logcat local dir
+         */
+        fun getLocalLogPath(): File? {
+            return application?.getExternalFilesDir("logs")
+        }
+
+        /**
+         * silent mode, no logcat output
+         */
+        fun silence() {
+            instance.silence = true
+        }
     }
 }
-
