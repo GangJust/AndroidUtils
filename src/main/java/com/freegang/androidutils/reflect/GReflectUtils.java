@@ -9,58 +9,6 @@ import java.util.*;
  * 反射工具类, 对反射的各种封装
  */
 public class GReflectUtils {
-    private static final HashMap<String, Field> fieldCache = new HashMap<>();
-
-    /**
-     * 从 XposedHelpers 中移植出来的通用工具方法
-     * <p>
-     * 获取某个类下的某个字段, 从当前类向上查找(父类), 直到找到为止
-     *
-     * @param clazz     目标类
-     * @param fieldName 字段名
-     * @return 找到的字段
-     * @throws NoSuchFieldError 未找到异常
-     */
-    public static Field findField(Class<?> clazz, String fieldName) {
-        String fullFieldName = clazz.getName() + '#' + fieldName;
-
-        if (fieldCache.containsKey(fullFieldName)) {
-            Field field = fieldCache.get(fullFieldName);
-            if (field == null)
-                throw new NoSuchFieldError(fullFieldName);
-            return field;
-        }
-
-        try {
-            Field field = findFieldRecursiveImpl(clazz, fieldName);
-            field.setAccessible(true);
-            fieldCache.put(fullFieldName, field);
-            return field;
-        } catch (NoSuchFieldException e) {
-            fieldCache.put(fullFieldName, null);
-            throw new NoSuchFieldError(fullFieldName);
-        }
-    }
-
-    //向上父类查找, 直到Object为止
-    private static Field findFieldRecursiveImpl(Class<?> clazz, String fieldName) throws NoSuchFieldException {
-        try {
-            return clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
-            while (true) {
-                clazz = clazz.getSuperclass();
-                if (clazz == null || clazz.equals(Object.class))
-                    break;
-
-                try {
-                    return clazz.getDeclaredField(fieldName);
-                } catch (NoSuchFieldException ignored) {
-                }
-            }
-            throw e;
-        }
-    }
-
     /**
      * 获取某个类的类结构
      *
