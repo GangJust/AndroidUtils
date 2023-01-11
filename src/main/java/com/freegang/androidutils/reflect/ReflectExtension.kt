@@ -10,7 +10,7 @@ private val methodCache = mutableMapOf<String, Method>()
  * 扩展方法, 找到某个字段, 并将其开放权限
  * @param name 字段名
  */
-private fun Class<*>.findField(name: String): Field {
+fun Class<*>.findField(name: String): Field {
     val key = "${this.name}#$name"
     return fieldCache.getOrPut(key) {
         var clazz: Class<*>? = this
@@ -43,7 +43,7 @@ fun <T : Any> Class<*>.findFieldAndGet(instance: Any, name: String): T {
  * @param name 方法名
  * @param parameterTypes 参数类型列表
  */
-private fun Class<*>.findMethod(name: String, vararg parameterTypes: Class<*>): Method {
+fun Class<*>.findMethod(name: String, vararg parameterTypes: Class<*>): Method {
     val parameters = if (parameterTypes.isNotEmpty()) parameterTypes.joinToString(",") { it.name } else ""
     val key = "${this.name}#$name($parameters)"
     return methodCache.getOrPut(key) {
